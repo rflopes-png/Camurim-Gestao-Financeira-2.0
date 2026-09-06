@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Camurin Incorporações — Painel de Gestão</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/gridjs@5.0.2/dist/gridjs.umd.js" integrity="sha384-/XXDzxe4FsGiAe50i/u9pY/Vy/uX654MHB1xoc1BJNnH1WXHhqHga9g3q5tF4gj7" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridjs@5.0.2/dist/theme/mermaid.min.css" integrity="sha384-jZvDSsmGB9oGGT/4l9bHXGoAv1OxvG/cFmSo0dZaSqmBgvQTKDBFAMftlXTmMbNW" crossorigin="anonymous">
+<style>
+  :root{
+    color-scheme: light;
+    --ink:#182620; --muted:#5c6b62; --line:#e3e7e0;
+    --pos-light:#C9B183; --pos-dark:#16352a;
+    --good:#2F6B49; --bad:#B3432B;
+    --brand-gold:#B08D57;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; padding:0 0 40px; background:#f6f7f3; font-family: Calibri, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; color:var(--ink); }
+  .page{ padding:24px 28px 0; }
+  .header{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:16px; flex-wrap:wrap; gap:10px;}
+  .header .brand{ display:flex; align-items:center; gap:12px; }
+  .header .brand svg{ width:38px; height:38px; color:var(--pos-dark); flex:none; }
+  .header .wordmark{ line-height:1.05; }
+  .header .wordmark .camurim{ font-size:19px; font-weight:800; letter-spacing:0.02em; color:var(--pos-dark); }
+  .header .wordmark .incorp{ font-size:10px; font-weight:700; letter-spacing:0.18em; color:var(--pos-dark); }
+  .header .tagline{ font-size:11px; font-style:italic; color:var(--brand-gold); margin-top:2px; }
+  .header h1{ font-size:18px; margin:0 0 4px 0; color:var(--ink); font-weight:700; }
+  .header .sub{ font-size:12px; color:var(--muted); }
+  .badge-live{ display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; color:#2F6B49; background:#e9f2ea; border:1px solid #cfe3d2; padding:4px 10px; border-radius:999px; }
+  .badge-live .dot{ width:6px; height:6px; border-radius:50%; background:#2F6B49; }
+
+  .tabs{ display:flex; gap:2px; border-bottom:2px solid var(--line); margin-bottom:22px; overflow-x:auto; }
+  .tab-btn{ padding:10px 16px; font-size:13px; font-weight:700; color:var(--muted); background:none; border:none; border-bottom:3px solid transparent; cursor:pointer; white-space:nowrap; font-family:inherit; }
+  .tab-btn:hover{ color:var(--ink); }
+  .tab-btn.active{ color:var(--pos-dark); border-bottom-color:var(--pos-dark); }
+  .tab-panel{ display:none; padding:0 28px; }
+  .tab-panel.active{ display:block; }
+
+  .kpi-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(170px,1fr)); gap:14px; margin-bottom:22px; }
+  .kpi-card{ background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 18px; }
+  .kpi-card .label{ font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:#7a8699; font-weight:600; margin-bottom:6px; }
+  .kpi-card .value{ font-size:21px; font-weight:700; color:var(--ink); }
+  .kpi-card .foot{ font-size:12px; color:#8a95a6; margin-top:4px; }
+  .kpi-card.accent{ border-top:3px solid var(--pos-dark); }
+  .kpi-card.warn{ border-top:3px solid #d97706; }
+
+  .slide{ background:#fff; border:1px solid var(--line); border-radius:10px; padding:20px 22px 16px; margin-bottom:20px; }
+  .slide .kicker{ font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--pos-dark); margin-bottom:6px; }
+  .slide .insight{ font-size:16px; font-weight:600; color:var(--ink); line-height:1.4; margin:0 0 16px 0; max-width:920px; }
+  .slide .insight b{ color:var(--pos-dark); }
+  .slide .insight b.bad{ color:var(--bad); }
+  .slide .insight b.good{ color:var(--good); }
+  .pair{ display:grid; grid-template-columns:1fr 1fr; gap:0; }
+  .pair .col{ padding:0 10px; }
+  .pair .col + .col{ border-left:1px solid var(--line); }
+  .pair .col-title{ font-size:11px; font-weight:700; color:var(--muted); text-align:center; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; }
+  @media (max-width:820px){ .pair{ grid-template-columns:1fr; } .pair .col + .col{ border-left:none; border-top:1px solid var(--line); padding-top:14px; } }
+  .chart-wrap{ position:relative; height:230px; }
+  .chart-wrap.tall{ height:280px; }
+  .chart-wrap.short{ height:150px; }
+  .slide-foot{ border-top:1px solid var(--line); margin-top:14px; padding-top:8px; display:flex; justify-content:space-between; font-size:11px; color:#9aa4b2; }
+
+  .proj-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(210px,1fr)); gap:14px; margin-bottom:20px; }
+  .proj-card{ background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 18px; }
+  .proj-card .name{ font-size:14px; font-weight:700; color:var(--ink); margin-bottom:2px; }
+  .proj-card .chip{ display:inline-block; font-size:10px; font-weight:700; letter-spacing:0.03em; padding:2px 8px; border-radius:999px; margin-bottom:10px; }
+  .chip-obra{ background:#e9f2ea; color:#2F6B49; }
+  .chip-terreno{ background:#f3ede1; color:#96763f; }
+  .proj-card .row{ display:flex; justify-content:space-between; font-size:12.5px; padding:4px 0; border-top:1px solid #f0f1ee; }
+  .proj-card .row:first-of-type{ border-top:none; }
+  .proj-card .row .l{ color:var(--muted); }
+  .proj-card .row .v{ font-weight:700; color:var(--ink); }
+  .proj-card .bar{ height:6px; border-radius:3px; background:#eef0ea; margin-top:10px; overflow:hidden; }
+  .proj-card .bar i{ display:block; height:100%; background:var(--pos-dark); }
+
+  .section-title{ font-size:15px; font-weight:700; color:var(--ink); margin:28px 0 4px; }
+  .section-sub{ font-size:12.5px; color:var(--muted); margin-bottom:14px; }
+  .opp-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(320px,1fr)); gap:14px; margin-bottom:20px; }
+  .opp-card{ background:#fff; border:1px solid var(--line); border-left:4px solid var(--brand-gold); border-radius:8px; padding:14px 16px; }
+  .opp-card .opp-kicker{ font-size:10px; font-weight:700; letter-spacing:0.06em; color:var(--brand-gold); text-transform:uppercase; margin-bottom:4px; }
+  .opp-card .opp-title{ font-size:13.5px; font-weight:700; color:var(--ink); margin-bottom:6px; }
+  .opp-card .opp-body{ font-size:12.5px; line-height:1.55; color:#33403a; }
+
+  .notes{ background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 20px; margin-bottom:20px; }
+  .notes h3{ margin:0 0 10px 0; font-size:13px; color:var(--ink); }
+  .notes ul{ margin:0; padding-left:18px; }
+  .notes li{ font-size:12.5px; line-height:1.6; color:#33404f; margin-bottom:6px; }
+  .notes li b{ color:var(--ink); }
+
+  .table-card{ background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px; margin-bottom:20px; }
+  .table-card h3{ margin:0 0 12px 0; font-size:14px; color:var(--ink); }
+
+  .sim-controls{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:18px; margin-bottom:16px; }
+  .sim-controls label{ display:block; font-size:11.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:6px; }
+  .sim-controls input[type=range]{ width:100%; accent-color:var(--pos-dark); cursor:pointer; }
+  .sim-btn-row{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .sim-btn{ font-size:12px; font-weight:700; padding:7px 14px; border-radius:999px; border:1px solid var(--pos-dark); background:#fff; color:var(--pos-dark); cursor:pointer; font-family:inherit; }
+  .sim-btn:hover{ background:#f0f4f1; }
+  .sim-btn.active{ background:var(--pos-dark); color:#fff; }
+
+  .loading{ text-align:center; padding:60px 0; color:#8a95a6; font-size:13px; }
+  .err{ background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:14px 18px; border-radius:10px; font-size:13px; margin-bottom:16px; }
+  .note{ background:#f3ede1; border:1px solid #e6d9bd; color:#7a5f2f; padding:10px 14px; border-radius:8px; font-size:12px; margin-bottom:16px; }
+  .page-footer{ display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; margin-top:8px; font-size:11px; color:#9aa4b2; padding-left:28px; padding-right:28px; }
+
+  table.gj-table, #cs-gridTable table, #emp-gridTable table, #atas-gridTable table{ font-size:12.5px; }
+  .gridjs-search-input{ font-size:13px; }
+
+  .exec-highlight{ background:linear-gradient(135deg, #16352a, #1f4a34); color:#fff; border-radius:12px; padding:24px 26px; margin-bottom:22px; }
+  .exec-highlight .label{ font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:#C9B183; font-weight:700; margin-bottom:8px; }
+  .exec-highlight p{ font-size:16px; line-height:1.55; margin:0; max-width:900px; }
+  .exec-highlight b{ color:#fff; border-bottom:2px solid var(--brand-gold); }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="brand">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linejoin="round">
+        <defs><clipPath id="houseClip"><path d="M50 7 L93 45 L93 93 L7 93 L7 45 Z"/></clipPath></defs>
+        <path d="M50 7 L93 45 L93 93 L7 93 L7 45 Z"/>
+        <g clip-path="url(#houseClip)">
+          <circle cx="16" cy="99" r="15"/><circle cx="44" cy="99" r="15"/><circle cx="72" cy="99" r="15"/><circle cx="100" cy="99" r="15"/>
+          <circle cx="30" cy="76" r="15"/><circle cx="58" cy="76" r="15"/><circle cx="86" cy="76" r="15"/>
+          <circle cx="44" cy="55" r="12"/><circle cx="70" cy="55" r="12"/>
+          <circle cx="60" cy="38" r="9"/>
+        </g>
+      </svg>
+      <div class="wordmark">
+        <div class="camurim">CAMURIM</div>
+        <div class="incorp">INCORPORAÇÕES</div>
+        <div class="tagline">Construindo histórias de verdade</div>
+        <div style="font-size:10px;color:#9aa4b2;margin-top:2px;">CNPJ 58.278.701/0001-77</div>
+      </div>
+    </div>
+    <div style="text-align:right;">
+      <h1>Painel de Gestão</h1>
+      <div class="sub">Resumo executivo + Capital Social + Empreendimentos (Camurim + JV Arca) + Insights + Atas — tudo em um só lugar</div>
+    </div>
+  </div>
+  <div style="margin-bottom:14px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+    <span class="badge-live"><span class="dot"></span> Painel 100% local — sem depender do Google Drive</span>
+    <span id="last-updated" style="font-size:11px; color:#8a95a6;"></span>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="resumo">Resumo Executivo</button>
+    <button class="tab-btn" data-tab="capital">Capital Social</button>
+    <button class="tab-btn" data-tab="empreendimentos">Empreendimentos</button>
+    <button class="tab-btn" data-tab="insights">Insights</button>
+    <button class="tab-btn" data-tab="atas">Atas & Pendências</button>
+    <button class="tab-btn" data-tab="roi">ROI vs. IPCA+6%</button>
+    <button class="tab-btn" data-tab="projecao">Projeção — 3 Lotes</button>
+  </div>
+</div>
+
+<div id="tab-resumo" class="tab-panel active page"></div>
+<div id="tab-capital" class="tab-panel page"></div>
+<div id="tab-empreendimentos" class="tab-panel page"></div>
+<div id="tab-insights" class="tab-panel page"></div>
+<div id="tab-atas" class="tab-panel page"></div>
+<div id="tab-roi" class="tab-panel page"></div>
+<div id="tab-projecao" class="tab-panel page"></div>
+
+<div class="page-footer">
+  <span>Fonte: ledger mantido pelo Claude (Capital Social, Duas Primeiras Casas, Terrenos) + Google Sheets ao vivo (Empreendimentos JV, Atas)</span>
+  <span>Camurin Incorporações — CNPJ 58.278.701/0001-77 — Painel de Gestão</span>
+</div>
+
+<script>
+/* ===================== CONFIG ===================== */
+// Painel 100% estático — nenhuma leitura ao vivo do Google Drive. Todos os dados vêm de
+// /Registros - Camurim/ledger/*.csv, mantidos pelo Claude conforme você reporta novidades no chat.
+const DATA_ATUALIZADO_EM = "05/09/2026";
+
+// MORADA BELA e MORADA BELA II sao a JV Camurim+Arca (50/50 - custo e receita divididos entre as duas empresas).
+// Os 3 lotes abaixo ainda sao 100% Camurim - land bank sem projeto formal, nao fazem parte da JV ainda.
+const PROJETOS_JV = ["MORADA BELA","MORADA BELA II"];
+const PROJETOS_CAMURIM_LAND = ["LOTE 16 QAH","LOTE 27AX","LOTE 32AX"];
+const PROJETOS = [...PROJETOS_JV, ...PROJETOS_CAMURIM_LAND];
+const LOTES_PARADOS = PROJETOS_CAMURIM_LAND;
+const JV_SPLIT_ARCA = 0.5; // Arca aporta/recebe 50% do custo e da receita de cada projeto da JV (confirmado p/ Morada Bela I e II)
+const SOCIOS_EQUITY = ["RAFAEL","DIOGO","GUILHERME","AYRSON"];
+const SOCIOS_CASH = ["RAFAEL","DIOGO","GUILHERME"];
+const UNIDADES_POR_PROJETO = 4; // 4 apartamentos por projeto da JV = 8 no total (Morada Bela + Morada Bela II)
+const VALOR_VENDA_UNIDADE = 165000; // atualizado 18/07/2026 - preco de venda bruto por unidade (8 apartamentos MB+MBII e as futuras unidades dos 3 lotes sem projeto), liquido calculado com o mesmo benchmark de despesa de venda de sempre (CUSTO_VENDA_PCT_BENCHMARK)
+const VGV_POR_PROJETO = UNIDADES_POR_PROJETO * VALOR_VENDA_UNIDADE; // bruto, antes da despesa de venda
+const SALDO_CONTA_JV = 3628.28; // saldo da conta corrente da JV (C6 Bank, ag 1 / conta 399809198) no ultimo lancamento do extrato conciliado
+const SALDO_CONTA_JV_DATA = "06/07/2026";
+
+// IPCA mensal (%) — fonte: IBGE (divulgações oficiais mensais) e Trading Economics (para conferência do YoY).
+// Real/oficial: 10/2025 a 06/2026 (9 meses). Estimado: 12/2024 a 09/2025 — o fechamento oficial do ano de 2025
+// foi 4,26% (confirmado pelo IBGE); a distribuição mês a mês de jan-set/2025 não foi encontrada nas fontes
+// consultadas, então foi estimada dividindo igualmente a taxa implícita (~0,40%/mês) entre esses 9 meses + dez/2024.
+// Ainda não há IPCA de julho/2026 publicado (mês corrente) — o benchmark é calculado até 30/06/2026.
+const IPCA_MENSAL = {
+  '2024-12': 0.0040, // estimado
+  '2025-01': 0.0040, '2025-02': 0.0040, '2025-03': 0.0040, '2025-04': 0.0040, // estimado
+  '2025-05': 0.0040, '2025-06': 0.0040, '2025-07': 0.0040, '2025-08': 0.0040, '2025-09': 0.0040, // estimado
+  '2025-10': 0.0009, '2025-11': 0.0018, '2025-12': 0.0033, // real (IBGE)
+  '2026-01': 0.0033, '2026-02': 0.0070, '2026-03': 0.0088, '2026-04': 0.0067, '2026-05': 0.0058, '2026-06': 0.0016, // real (IBGE)
+};
+const IPCA_ULTIMO_MES = '2026-06';
+const RETORNO_EXTRA_ANUAL = 0.06; // "+6%" ao ano sobre o IPCA
+const RETORNO_EXTRA_MENSAL = Math.pow(1 + RETORNO_EXTRA_ANUAL, 1/12) - 1;
+
+/* ===================== DADOS ESTATICOS (ledger mantido pelo Claude) ===================== */
+/* Substituem a leitura ao vivo de Capital Social e Duas Primeiras Casas.
+   Fonte: /Registros - Camurim/ledger/*.csv — atualizado manualmente conforme voce reporta despesas. */
+const EMBED = {"cs": [["DIOGO", "17/12/2024", 41500.0, "PAGO", "PIX", "GUILHERME"], ["DIOGO", "23/12/2024", 41500.0, "PAGO", "PIX", "GUILHERME"], ["DIOGO", "24/12/2024", 17000.0, "PAGO", "PIX", "GUILHERME"], ["GUILHERME", "01/01/2025", 77734.63, "PAGO", "PIX", ""], ["GUILHERME", "21/01/2025", 21800.0, "PAGO", "DINHEIRO", ""], ["DIOGO", "11/02/2025", 10000.0, "PAGO", "PIX", "GUILHERME"], ["GUILHERME", "12/02/2025", 4700.0, "PAGO", "DINHEIRO", ""], ["GUILHERME", "13/02/2025", 4800.0, "PAGO", "DINHEIRO", ""], ["GUILHERME", "19/02/2025", 5000.0, "PAGO", "PIX", ""], ["GUILHERME", "20/02/2025", 4901.0, "PAGO", "DINHEIRO", ""], ["DIOGO", "24/02/2025", 8910.28, "PAGO", "PIX", "GUILHERME"], ["GUILHERME", "28/02/2025", 8600.0, "PAGO", "DINHEIRO", ""], ["DIOGO", "03/03/2025", 8600.0, "PAGO", "PIX", "GUILHERME"], ["GUILHERME", "14/03/2025", 4000.0, "PAGO", "DINHEIRO", ""], ["DIOGO", "17/03/2025", 4000.0, "PAGO", "PIX", "GUILHERME"], ["GUILHERME", "25/03/2025", 4026.5, "PAGO", "PIX", ""], ["DIOGO", "25/03/2025", 4026.5, "PAGO", "PIX", "GUILHERME"], ["GUILHERME", "28/03/2025", 1995.0, "PAGO", "PIX", ""], ["DIOGO", "28/03/2025", 1995.0, "PAGO", "PIX", "GUILHERME"], ["GUILHERME", "04/04/2025", 2962.5, "PAGO", "PIX", ""], ["DIOGO", "07/04/2025", 2965.5, "PAGO", "PIX", "GUILHERME"], ["DIOGO", "07/04/2025", 6000.0, "PAGO", "PIX", "GUILHERME"], ["GUILHERME", "24/04/2025", 1982.32, "PAGO", "PIX", ""], ["GUILHERME", "07/05/2025", 1188.0, "PAGO", "PIX", ""], ["GUILHERME", "08/05/2025", 2300.0, "PAGO", "PIX", ""], ["GUILHERME", "09/05/2025", 1139.8, "PAGO", "PIX", ""], ["GUILHERME", "15/05/2025", 2693.52, "PAGO", "PIX", ""], ["DIOGO", "16/05/2025", 3303.64, "PAGO", "PIX", "GUILHERME"], ["GUILHERME", "28/05/2025", 2005.03, "PAGO", "PIX", ""], ["DIOGO", "27/05/2025", 2005.03, "PAGO", "PIX", "GUILHERME"], ["DIOGO", "06/06/2025", 2720.5, "PAGO", "PIX", "GUILHERME"], ["GUILHERME", "06/06/2025", 2520.5, "PAGO", "PIX", ""], ["GUILHERME", "10/06/2025", 353.43, "PAGO", "PIX", ""], ["GUILHERME", "11/06/2025", 823.29, "PAGO", "PIX", ""], ["DIOGO", "11/06/2025", 976.72, "PAGO", "PIX", "GUILHERME"], ["GUILHERME", "25/06/2025", 64.9, "PAGO", "PIX", ""], ["GUILHERME", "08/07/2025", 600.0, "PAGO", "PIX", ""], ["DIOGO", "10/07/2025", 1315.64, "PAGO", "PIX", "RUTH"], ["DIOGO", "10/07/2025", 685.81, "PAGO", "PIX", "RUTH"], ["GUILHERME", "10/07/2025", 1314.2, "PAGO", "PIX", ""], ["GUILHERME", "15/07/2025", 917.83, "PAGO", "PIX", ""], ["GUILHERME", "18/07/2025", 56.33, "PAGO", "PIX", ""], ["GUILHERME", "30/07/2025", 1000.0, "PAGO", "PIX", ""], ["GUILHERME", "31/07/2025", 1500.0, "PAGO", "PIX", ""], ["DIOGO", "04/08/2025", 3474.16, "PAGO", "PIX", "RUTH"], ["GUILHERME", "11/08/2025", 1244.0, "PAGO", "PIX", ""], ["GUILHERME", "29/08/2025", 1440.0, "PAGO", "PIX", ""], ["GUILHERME", "04/09/2025", 400.0, "PAGO", "PIX", ""], ["DIOGO", "04/09/2025", 1084.0, "PAGO", "PIX", "RUTH"], ["DIOGO", "04/09/2025", 2000.0, "PAGO", "PIX", "RUTH"], ["DIOGO", "19/09/2025", 176.0, "PAGO", "PIX", "RUTH"], ["DIOGO", "19/09/2025", 1064.0, "PAGO", "PIX", "RUTH"], ["DIOGO", "30/09/2025", 70000.0, "PAGO", "PIX", "RAFAEL/TOLIVE"], ["GUILHERME", "02/10/2025", 75000.0, "PAGO", "PIX", "RAFAEL/TOLIVE"], ["DIOGO", "03/10/2025", 30000.0, "PAGO", "PIX", "RAFAEL/TOLIVE"], ["GUILHERME", "03/10/2025", 25000.0, "PAGO", "PIX", "RAFAEL/TOLIVE"], ["DIOGO", "06/10/2025", -1240.0, "PAGO", "PIX", ""], ["RAFAEL", "31/10/2025", 75000.0, "PAGO", "PIX", ""], ["RAFAEL", "01/11/2025", 45000.0, "PAGO", "PIX", ""], ["GUILHERME", "29/06/2026", 2000.0, "PAGO", "PIX", ""], ["RAFAEL", "29/06/2026", 2000.0, "PAGO", "PIX", ""], ["DIOGO", "29/06/2026", 2000.0, "PAGO", "PIX", ""], ["RAFAEL", "13/07/2026", 800.0, "PAGO", "", "GUILHERME"], ["DIOGO", "13/07/2026", 800.0, "PAGO", "", "GUILHERME"], ["GUILHERME", "13/07/2026", 800.0, "PAGO", "", ""], ["RAFAEL", "03/07/2026", 833.33, "PAGO", "", "GUILHERME"], ["DIOGO", "03/07/2026", 833.33, "PAGO", "", "GUILHERME"], ["GUILHERME", "03/07/2026", 833.34, "PAGO", "", ""], ["GUILHERME", "10/08/2026", 1350.0, "PAGO", "", ""], ["GUILHERME", "10/08/2026", 535.54, "PAGO", "", ""], ["GUILHERME", "17/08/2026", 5000.0, "PAGO", "", ""], ["GUILHERME", "26/08/2026", 3000.0, "PAGO", "", ""], ["GUILHERME", "27/08/2026", 4200.0, "PAGO", "", ""], ["GUILHERME", "28/08/2026", 3000.0, "PAGO", "", ""], ["RAFAEL", "05/09/2026", 2834.0, "A REEMBOLSAR", "", ""], ["DIOGO", "05/09/2026", 2000.0, "A REEMBOLSAR", "", ""], ["GUILHERME", "05/09/2026", 20753.54, "A REEMBOLSAR", "", ""]], "dc": [["11/12/2024", "LAUDICELIO BEZERRA CAVALCANTE", "SERVIÇO - ALUGUEL EQUIPAMENTO", "Supressão De Solo e Terraplenagem", 1350.0, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["11/12/2024", "ANGERSON JEAN SILVA QUEIROZ", "SERVIÇO - ARQUITETO (LOTE 1)", "Projeto De Arquitetura", 1000.0, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["11/12/2024", "ANGERSON JEAN SILVA QUEIROZ", "SERVIÇO - ARQUITETO (LOTE 1)", "Projeto De Arquitetura", 1000.0, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["12/12/2024", "ANGERSON JEAN SILVA QUEIROZ", "SERVIÇO - ARQUITETO (LOTE 1)", "Projeto De Arquitetura", 2000.0, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["13/12/2024", "CAPTALYS FIDC NP - MAIS LOTES", "ATIVO IMOBILIZADO (LOTE 1)", "Compra De Lote", 52250.0, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["16/12/2024", "POLIMIX - BRITAS", "MATERIAL", "Brita n.12", 1629.0, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["19/12/2024", "AMAZON", "FERRAMENTAS", "Ferramentas", 1458.01, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["19/12/2024", "RENASCER", "FERRAMENTAS", "Ferramentas", 4010.65, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["19/12/2024", "RGS CIMENTOS", "MATERIAL", "Cimento", 1280.0, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["19/12/2024", "FRANKLIN", "MATERIAL", "Areia Grossa & Areia Fina", 2600.0, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["19/12/2024", "CANTINA CASEIRA", "MATERIAL", "Tijolo", 10240.0, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["20/12/2024", "RENASCER", "FERRAMENTAS", "Ferramentas", 218.55, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Alumifer Aluminio e Ferro", "MATERIAL", "Ferragem 5/16 6 metros", 4115.2, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Alumifer Aluminio e Ferro", "MATERIAL", "Ferragem 5/16 6 metros", 157.5, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "18x Conselho De Arquitetura e Urbanismo de PE", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Conselho de Arquitetura e Urbanismo CAU/PE", 2152.98, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - AH17 Area Desmembrada", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 325.32, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - AH17 Area Remanscente", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 325.32, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - AH18 Area Desmembrada", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 325.32, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - AH18 Area Remanscente", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 325.32, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - AH18 Desmembramento", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 107.44, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - AX27 Area Desmembrada", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 325.32, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - AX27 Area Remanscente", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 325.32, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - AX27 Desmembramento", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 107.44, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - AX32 Area Desmembrada", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 325.32, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - AX32 Area Remanscente", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 325.32, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - AX32 Desmembramento", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 107.44, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - AX42 Area Desmembrada", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 325.32, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - AX42 Area Remanscente", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 325.32, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - AX42 Desmembramento", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 107.44, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - BL40 Area Desmembrada", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 325.32, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - BL40 Area Remanscente", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 325.32, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Prefeitura de Carpina - BL40 Desmembramento", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 107.44, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["24/12/2024", "Prefeitura de Carpina - AH17 Desmembramento", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "Prefeitura de Carpina - Desmembramento", 107.44, "PIX", "GUILHERME (ANTES DA CAMURIM TER CONTA)"], ["23/12/2024", "Ayrson - Agro Campelo Madeira", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 147.0, "PIX", "CAMURIM"], ["23/12/2024", "Aryson - CARMEL CARPINA MATERIAL ELETRICOS", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 41.99, "PIX", "CAMURIM"], ["23/12/2024", "Ayrson - MRE ARMAZEM D E CONSTRUCOES LTDA", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 64.0, "PIX", "CAMURIM"], ["24/12/2024", "Ayrson - JOSE GOMES DA SILVA", "OUTROS", "Frete", 50.0, "PIX", "CAMURIM"], ["27/12/2024", "Severino Caetano dos Santos", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 120.0, "PIX", "CAMURIM"], ["27/12/2024", "MUNICIPIO DE CARPINA", "TAXAS / IMPOSTOS (LOTE 1)", "Prefeitura de Carpina - IPTU Irregular", 123.08, "PIX", "CAMURIM"], ["27/12/2024", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 2800.0, "PIX", "CAMURIM"], ["27/12/2024", "AYRSON JAIME BELLO LOPES NETO", "OUTROS", "Contratação de Abastecimento de Água", 100.0, "PIX", "CAMURIM"], ["27/12/2024", "AYRSON JAIME BELLO LOPES NETO", "OUTROS", "Frete", 120.0, "PIX", "CAMURIM"], ["28/12/2024", "BELO LAJES", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 1620.0, "PIX", "CAMURIM"], ["03/01/2025", "MANUEL FELICIANO DO VALE", "OUTROS", "Frete", 80.0, "PIX", "CAMURIM"], ["03/01/2025", "JOSIAS FRANCISCO QUIRINO - VIEIRA CONSTRUCOES", "MATERIAL", "Vedacit 18 Litros", 25.5, "PIX", "CAMURIM"], ["03/01/2025", "NAB COMERCIO ATACADISTA DE MATERIAIS DE CONSTRUCAO", "MATERIAL", "Vedacit 18 Litros", 250.0, "PIX", "CAMURIM"], ["03/01/2025", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 3500.0, "PIX", "CAMURIM"], ["03/01/2025", "AYRSON JAIME BELLO LOPES NETO", "OUTROS", "Contratação de Abastecimento de Água", 150.0, "PIX", "CAMURIM"], ["03/01/2025", "AYRSON JAIME BELLO LOPES NETO", "OUTROS", "Frete", 90.0, "PIX", "CAMURIM"], ["06/01/2025", "AYRSON JAIME BELLO LOPES NETO", "SERVIÇO - ALUGUEL EQUIPAMENTO", "qual o centro de custo na aba 'orcamento'?", 680.0, "PIX", "CAMURIM"], ["06/01/2025", "AYRSON JAIME BELLO LOPES NETO", "SUBSTINENCIA - ADM", "Gastos com Substinencia Administrador", 2000.0, "PIX", "CAMURIM"], ["09/01/2025", "AGRO CAMPELO", "MATERIAL", "Tábua Madeira Pinus", 1740.0, "PIX", "CAMURIM"], ["09/01/2025", "PRATICO SERVICO DE CONSTRUCAO", "SERVIÇO - ALUGUEL EQUIPAMENTO", "qual o centro de custo na aba 'orcamento'?", 400.0, "PIX", "CAMURIM"], ["09/01/2025", "RGS CIMENTOS", "MATERIAL", "Cimento", 640.0, "PIX", "CAMURIM"], ["09/01/2025", "AYRSON JAIME BELLO LOPES NETO", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 60.0, "PIX", "CAMURIM"], ["10/01/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 28.35, "PIX", "CAMURIM"], ["10/01/2025", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 4500.0, "PIX", "CAMURIM"], ["10/01/2025", "AYRSON JAIME BELLO LOPES NETO", "OUTROS", "Frete", 150.0, "PIX", "CAMURIM"], ["10/01/2025", "AYRSON JAIME BELLO LOPES NETO", "OUTROS", "Contratação de Abastecimento de Água", 150.0, "PIX", "CAMURIM"], ["10/01/2025", "AYRSON JAIME BELLO LOPES NETO", "SERVIÇO - ALUGUEL EQUIPAMENTO", "Ligação Provisória de Energia Elétrica", 150.0, "PIX", "CAMURIM"], ["10/01/2025", "VOTORANTIM", "MATERIAL", "Cimento", 2320.8, "PIX", "CAMURIM"], ["10/01/2025", "PRATICO SERVICO DE CONSTRUCAO", "SERVIÇO - ALUGUEL EQUIPAMENTO", "qual o centro de custo na aba 'orcamento'?", 388.0, "PIX", "CAMURIM"], ["10/01/2025", "COPYMAX", "OUTROS", "", 460.0, "PIX", "CAMURIM"], ["13/01/2025", "ARMAZEM CORAL", "MATERIAL", "Tanque Poliet FortPlus 2.000L Cisterna", 3380.0, "PIX", "CAMURIM"], ["16/01/2025", "Alumifer Aluminio e Ferro", "MATERIAL", "Ferragem 5/16 6 metros", 1199.4, "PIX", "CAMURIM"], ["16/01/2025", "VIEIRA CONSTRUCOES", "MATERIAL", "Tijolo", 1480.0, "PIX", "CAMURIM"], ["17/01/2025", "AYRSON JAIME BELLO LOPES NETO", "SERVIÇO - ALUGUEL EQUIPAMENTO", "qual o centro de custo na aba 'orcamento'?", 255.0, "PIX", "CAMURIM"], ["17/01/2025", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 4500.0, "PIX", "CAMURIM"], ["17/01/2025", "AYRSON JAIME BELLO LOPES NETO", "OUTROS", "Frete", 160.0, "PIX", "CAMURIM"], ["17/01/2025", "AYRSON JAIME BELLO LOPES NETO", "OUTROS", "Contratação de Abastecimento de Água", 150.0, "PIX", "CAMURIM"], ["20/01/2025", "FRANKLIN NEGREIROS", "MATERIAL", "Areia Grossa & Areia Fina", 2600.0, "PIX", "CAMURIM"], ["21/01/2025", "CASA DO CONSTRUTOR", "SERVIÇO - ALUGUEL EQUIPAMENTO", "qual o centro de custo na aba 'orcamento'?", 192.0, "PIX", "CAMURIM"], ["21/01/2025", "EVERALDO JOSE SILVA", "OUTROS", "Frete", 200.0, "PIX", "CAMURIM"], ["22/01/2025", "ROCA SANITARIOS BRASIL LTDA", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 2670.35, "PIX", "CAMURIM"], ["22/01/2025", "DES CARPINA ALUGUEL DE EQUIPAMENTOS", "SERVIÇO - ALUGUEL EQUIPAMENTO", "qual o centro de custo na aba 'orcamento'?", 20.0, "PIX", "CAMURIM"], ["22/01/2025", "AGRO CAMPELO", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 672.0, "PIX", "CAMURIM"], ["25/01/2025", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 4500.0, "DINHEIRO", "CAMURIM"], ["25/01/2025", "AYRSON JAIME BELLO LOPES NETO", "OUTROS", "Contratação de Abastecimento de Água", 150.0, "DINHEIRO", "CAMURIM"], ["25/01/2025", "AYRSON JAIME BELLO LOPES NETO", "OUTROS", "Frete", 150.0, "DINHEIRO", "CAMURIM"], ["27/01/2025", "JOSE BELO DA SILVA / BELO LAJES", "MATERIAL", "Laje Cobertura", 4342.8, "PIX", "CAMURIM"], ["28/01/2025", "AYRSON JAIME BELLO LOPES NETO / MADEIRA CARPINA", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 2650.0, "DINHEIRO", "CAMURIM"], ["28/01/2025", "AYRSON JAIME BELLO LOPES NETO / BELO LAJES", "MATERIAL", "Laje Cobertura", 4000.0, "DINHEIRO", "CAMURIM"], ["29/01/2025", "RENASCER", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 3280.38, "PIX", "CAMURIM"], ["29/01/2025", "POLIMIX - BRITAS", "MATERIAL", "Brita n.12", 1629.0, "PIX", "CAMURIM"], ["29/01/2025", "CERAMICA BOM JESUS", "MATERIAL", "Tijolo", 2900.0, "PIX", "CAMURIM"], ["29/01/2025", "COMERCIAL DE CONSTRUCAO 2001", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 241.9, "PIX", "CAMURIM"], ["29/01/2025", "COMERCIAL DE CONSTRUCAO 2001", "MATERIAL", "Vedalit 3,6 Litros", 139.8, "PIX", "CAMURIM"], ["31/01/2025", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 4500.0, "DINHEIRO", "CAMURIM"], ["31/01/2025", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 800.0, "DINHEIRO", "CAMURIM"], ["31/01/2025", "AYRSON JAIME BELLO LOPES NETO", "OUTROS", "Contratação de Abastecimento de Água", 150.0, "DINHEIRO", "CAMURIM"], ["31/01/2025", "AYRSON JAIME BELLO LOPES NETO", "OUTROS", "Frete", 120.0, "DINHEIRO", "CAMURIM"], ["31/01/2025", "AYRSON JAIME BELLO LOPES NETO", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 30.0, "DINHEIRO", "CAMURIM"], ["04/02/2025", "COMERCIAL DE CONSTRUCAO 2001", "MATERIAL", "", 5982.83, "PIX", "CAMURIM"], ["05/02/2025", "AYRSON JAIME BELLO LOPES NETO", "SUBSTINENCIA - ADM", "Gastos com Substinencia Administrador", 2500.0, "PIX", "CAMURIM"], ["06/02/2025", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 4500.0, "DINHEIRO", "CAMURIM"], ["06/02/2025", "AYRSON JAIME BELLO LOPES NETO", "OUTROS", "Contratação de Abastecimento de Água", 150.0, "DINHEIRO", "CAMURIM"], ["06/02/2025", "AYRSON JAIME BELLO LOPES NETO", "OUTROS", "Frete", 140.0, "DINHEIRO", "CAMURIM"], ["06/02/2025", "AYRSON JAIME BELLO LOPES NETO", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", -40.0, "DINHEIRO", "CAMURIM"], ["06/02/2025", "AYRSON JAIME BELLO LOPES NETO", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 10.0, "PIX", "CAMURIM"], ["10/02/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 28.35, "PIX", "CAMURIM"], ["10/02/2025", "JORGE MAILSON PAULINO DA SILVA", "SERVIÇO - MO GESSO", "Contrato M.O. Gesso", 1880.0, "PIX", "CAMURIM"], ["11/02/2025", "FRANKLIN NEGREIROS", "MATERIAL", "Areia Grossa & Areia Fina", 1300.0, "PIX", "CAMURIM"], ["11/02/2025", "COMERCIAL DE CONSTRUCAO 2001", "FERRAMENTAS", "Ferramentas", 119.4, "PIX", "CAMURIM"], ["11/02/2025", "MRE ARMAZEM DE CONSTRUCAO", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 725.0, "PIX", "CAMURIM"], ["11/02/2025", "NORTEL", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 7126.74, "PIX", "CAMURIM"], ["11/02/2025", "PRATICO SERVICO DE CONSTRUCAO", "SERVIÇO - ALUGUEL EQUIPAMENTO", "qual o centro de custo na aba 'orcamento'?", 288.0, "PIX", "CAMURIM"], ["11/02/2025", "PRATICO SERVICO DE CONSTRUCAO", "SERVIÇO - ALUGUEL EQUIPAMENTO", "qual o centro de custo na aba 'orcamento'?", 300.0, "PIX", "CAMURIM"], ["11/02/2025", "RGS CIMENTOS", "MATERIAL", "Cimento", 640.0, "PIX", "CAMURIM"], ["11/02/2025", "TRIBUNAL DE JUSTICA (VIA MARINA)", "TAXAS / IMPOSTOS (LOTE 1)", "qual o centro de custo na aba 'orcamento'?", 16.59, "PIX", "CAMURIM"], ["12/02/2025", "ELETRICISTA", "SERVIÇO - MO ELETRICA", "Contrato M.O. Elétrica", 700.0, "DINHEIRO", "CAMURIM"], ["13/02/2025", "PAMESA ADMINISTRADORA DE RECEBIVEIS", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 9090.12, "PIX", "CAMURIM"], ["13/02/2025", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 4500.0, "DINHEIRO", "CAMURIM"], ["13/02/2025", "AYRSON JAYME BELLO LOPES NETO (FRETE)", "OUTROS", "Contratação de Abastecimento de Água", 150.0, "DINHEIRO", "CAMURIM"], ["13/02/2025", "AYRSON JAYME BELLO LOPES NETO (AGUA)", "OUTROS", "Frete", 150.0, "DINHEIRO", "CAMURIM"], ["17/02/2025", "NATIANE JARDELINO DA SILVA (60%)", "MATERIAL", "Orçamento de Portas e Janelas de Vidro / Portão / Lixeira", 4800.0, "PIX", "CAMURIM"], ["18/02/2025", "JORGE MAILSON PAULINO DA SILVA", "SERVIÇO - MO GESSO", "Contrato M.O. Gesso", 1880.0, "PIX", "CAMURIM"], ["18/02/2025", "ARTHUR LOCACOES", "SERVIÇO - ALUGUEL EQUIPAMENTO", "Compactação Do Piso Interno da Casa", 400.0, "PIX", "CAMURIM"], ["19/02/2025", "VOTORANTIM", "MATERIAL", "Cimento", 3673.2, "PIX", "CAMURIM"], ["19/02/2025", "VOTORANTIM", "MATERIAL", "Cimento", 2448.8, "PIX", "CAMURIM"], ["19/02/2025", "PREFEITURA DE CARPINA - IPTU", "TAXAS / IMPOSTOS (LOTE 1)", "Prefeitura de Carpina - IPTU", 46.03, "PIX", "CAMURIM"], ["19/02/2025", "PREFEITURA DE CARPINA - ITBI", "TAXAS / IMPOSTOS (LOTE 1)", "Prefeitura de Carpina - ITBI", 1000.0, "PIX", "CAMURIM"], ["20/02/2025", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 4500.0, "DINHEIRO", "CAMURIM"], ["20/02/2025", "AYRSON JAYME BELLO LOPES NETO (FRETE)", "OUTROS", "Contratação de Abastecimento de Água", 120.0, "DINHEIRO", "CAMURIM"], ["20/02/2025", "AYRSON JAYME BELLO LOPES NETO (AGUA)", "OUTROS", "Frete", 200.0, "DINHEIRO", "CAMURIM"], ["20/02/2025", "AYRSON JAYME BELLO LOPES NETO (TELA)", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 81.0, "DINHEIRO", "CAMURIM"], ["25/02/2025", "DES CARPINA ALUGUEL DE EQUIPAMENTOS", "SERVIÇO - ALUGUEL EQUIPAMENTO", "qual o centro de custo na aba 'orcamento'?", 222.0, "PIX", "CAMURIM"], ["25/02/2025", "DINAMO TRANSPORTES", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 992.5, "PIX", "CAMURIM"], ["25/02/2025", "TINTAS FREVO", "MATERIAL", "qual o centro de custo na aba 'orcamento'?", 1827.43, "PIX", "CAMURIM"], ["25/02/2025", "PRATICO SERVICO DE CONSTRUCAO", "SERVIÇO - ALUGUEL EQUIPAMENTO", "qual o centro de custo na aba 'orcamento'?", 300.0, "PIX", "CAMURIM"], ["25/02/2025", "VOTORANTIM", "MATERIAL", "Cimento", 2494.66, "PIX", "CAMURIM"], ["25/02/2025", "EVERALDO JOSE SILVA", "OUTROS", "Frete", 200.0, "PIX", "CAMURIM"], ["28/02/2025", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 4500.0, "DINHEIRO", "CAMURIM"], ["28/02/2025", "AYRSON JAYME BELLO LOPES NETO (FRETE)", "OUTROS", "Contratação de Abastecimento de Água", 120.0, "DINHEIRO", "CAMURIM"], ["28/02/2025", "AYRSON JAYME BELLO LOPES NETO (AGUA)", "OUTROS", "Frete", 200.0, "DINHEIRO", "CAMURIM"], ["28/02/2025", "AYRSON JAYME BELLO LOPES NETO (GESSO)", "SERVIÇO - MO GESSO", "Contrato M.O. Gesso", 3760.0, "DINHEIRO", "CAMURIM"], ["28/02/2025", "AYRSON JAYME BELLO LOPES NETO", "SUBSTINENCIA - ADM", "Gastos com Substinencia Administrador", 20.0, "DINHEIRO", "CAMURIM"], ["26/02/2025", "CREDITO PIX", "TAXAS BANCARIAS", "TAXAS BANCARIAS", -0.01, "PIX", "CAMURIM"], ["28/02/2025", "AYRSON JAYME BELLO LOPES NETO", "SUBSTINENCIA - ADM", "Gastos com Substinencia Administrador", 2000.0, "PIX", "CAMURIM"], ["06/03/2025", "VOTORANTIM", "MATERIAL", "Cimento", -3673.2, "PIX", "CAMURIM"], ["07/03/2025", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 1500.0, "PIX", "CAMURIM"], ["07/03/2025", "AYRSON JAYME BELLO LOPES NETO", "OUTROS", "Contratação de Abastecimento de Água", 50.0, "PIX", "CAMURIM"], ["10/03/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 28.35, "PIX", "CAMURIM"], ["11/03/2025", "MASSA PRONTA PRODUTOS E SERVICOS", "MATERIAL", "", 2831.63, "PIX", "CAMURIM"], ["11/03/2025", "TRANSMATE TRANSPORTADORA", "MATERIAL", "", 153.75, "PIX", "CAMURIM"], ["11/03/2025", "FRANKLIN NEGREIROS", "MATERIAL", "", 2600.0, "PIX", "CAMURIM"], ["11/03/2025", "PRATICO SERVICO DE CONSTRUCAO", "SERVIÇO - ALUGUEL EQUIPAMENTO", "", 288.0, "PIX", "CAMURIM"], ["11/03/2025", "RGS CIMENTOS", "MATERIAL", "CIMENTO", 3200.0, "PIX", "CAMURIM"], ["11/03/2025", "TJPE / FERM", "TAXAS / IMPOSTOS (LOTE 1)", "TJPE - Taxa de Lavratura da Escritura", 1933.61, "PIX", "CAMURIM"], ["14/03/2025", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 4500.0, "DINHEIRO", "CAMURIM"], ["14/03/2025", "AYRSON JAYME BELLO LOPES NETO", "SUBSTINENCIA - ADM", "Gastos com Substinencia Administrador", -500.0, "DINHEIRO", "CAMURIM"], ["21/03/2025", "AYRSON JAYME BELLO LOPES NETO (FRETE)", "OUTROS", "Contratação de Abastecimento de Água", 200.0, "PIX", "CAMURIM"], ["21/03/2025", "AYRSON JAYME BELLO LOPES NETO (AGUA)", "OUTROS", "Frete", 190.0, "PIX", "CAMURIM"], ["21/03/2025", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 4500.0, "PIX", "CAMURIM"], ["25/03/2025", "COMERCIAL DE CONSTRUCAO 2001", "MATERIAL", "", 2553.0, "PIX", "GUILHERME"], ["25/03/2025", "GILSON SEVERINO ALVES", "OUTROS", "", 200.0, "PIX", "GUILHERME"], ["25/03/2025", "Renato Luis da Silva (Pintor)", "SERVIÇO - MO PINTURA", "Contrato M.O. Pintura", 1300.0, "PIX", "GUILHERME"], ["26/03/2025", "TJPE / FERM", "TAXAS / IMPOSTOS (LOTE 1)", "TJPE - Taxa de Atualizacao da Certidao", 16.59, "PIX", "CAMURIM"], ["28/03/2025", "AYRSON JAYME BELLO LOPES NETO (MAO DE OBRA)", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 400.0, "PIX", "GUILHERME"], ["28/03/2025", "AYRSON JAYME BELLO LOPES NETO (MO HIDRAULICA)", "SERVIÇO - MO HIDRAULICA", "Contrato M.O. Hidráulica", 2000.0, "PIX", "GUILHERME"], ["28/03/2025", "AYRSON JAYME BELLO LOPES NETO (MO MARCENEIRO)", "SERVIÇO - MO CARPINTEIRO", "Contrato M.O. Carpinteiro Instalação De Portas", 600.0, "PIX", "GUILHERME"], ["29/03/2025", "AYRSON JAYME BELLO LOPES NETO (Eletricista Material)", "MATERIAL", "", 553.3, "PIX", "CAMURIM"], ["04/04/2025", "Renato Luis da Silva (Pintor)", "SERVIÇO - MO PINTURA", "Contrato M.O. Pintura", 1000.0, "PIX", "GUILHERME"], ["04/04/2025", "IDEAL INDUSTRIA E COMERCIO M.G. LTDA", "MATERIAL", "Orçamento de Pedras e Granitos", 2925.0, "PIX", "GUILHERME"], ["04/04/2025", "AYRSON JAYME BELLO LOPES NETO", "SUBSTINENCIA - ADM", "Gastos com Substinencia Administrador", 2000.0, "PIX", "GUILHERME"], ["09/04/2025", "Prefeitura de Carpina (DAM HABITE-SE)", "TAXAS / IMPOSTOS (LOTE 1)", "Habite-se", 341.16, "PIX", "GUILHERME"], ["09/04/2025", "Prefeitura de Carpina (DAM HABITE-SE)", "TAXAS / IMPOSTOS (LOTE 1)", "Habite-se", 341.16, "PIX", "GUILHERME"], ["10/04/2025", "Caixa ECONOMICA FEDERAL", "TAXAS BANCARIAS", "Taxas Bancarias", 189.0, "PIX", "CAMURIM"], ["23/04/2025", "NATIANE JARDELINO DA SILVA (60%)", "MATERIAL", "Orçamento de Portas e Janelas de Vidro / Portão / Lixeira", 3200.0, "PIX", "GUILHERME"], ["24/04/2025", "AYRSON JAIME BELLO LOPES NETO", "TAXAS / IMPOSTOS (LOTE 1)", "Habite-se", 100.0, "PIX", "GUILHERME"], ["07/05/2025", "VALMIR JOSE DA SILVA", "SERVIÇO - DESPACHANTE", "Despachante", 400.0, "PIX", "GUILHERME"], ["07/05/2025", "Renato Luis da Silva (Pintor)", "SERVIÇO - MO PINTURA", "Contrato M.O. Pintura", 788.0, "PIX", "GUILHERME"], ["07/05/2025", "Renato Luis da Silva (Pintor)", "SERVIÇO - MO PINTURA", "Contrato M.O. Pintura", -488.0, "N/A", "N/A"], ["07/05/2025", "ELETRICISTA", "MATERIAL", "", 88.0, "N/A", "N/A"], ["07/05/2025", "ELETRICISTA", "SERVIÇO - MO ELETRICA", "Contrato M.O. Elétrica", 400.0, "N/A", "N/A"], ["08/05/2025", "AYRSON JAYME BELLO LOPES NETO", "ADIANTAMENTO DE LUCRO", "", 2000.0, "PIX", "GUILHERME"], ["08/05/2025", "ELETRICISTA", "SERVIÇO - MO ELETRICA", "Contrato M.O. Elétrica", 300.0, "PIX", "GUILHERME"], ["09/05/2025", "TJPE / FERM", "TAXAS / IMPOSTOS (LOTE 1)", "Taxa da Inscricao da Escritura", 1139.8, "PIX", "GUILHERME"], ["10/05/2025", "Caixa ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 189.0, "PIX", "CAMURIM"], ["13/05/2025", "TECHNICAL COMERCIO DE TINTAS E VERN", "MATERIAL", "", 616.0, "PIX", "CAMURIM"], ["13/05/2025", "LEANDRO ARAUJO DA SILVA NASCIMENTO", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 953.88, "PIX", "GUILHERME"], ["13/05/2025", "Renato Luis da Silva (Pintor)", "SERVIÇO - MO PINTURA", "Contrato M.O. Pintura", 500.0, "PIX", "GUILHERME"], ["13/05/2025", "VOTORANTIM CIMENTOS", "MATERIAL", "Cimento", 54.91, "PIX", "GUILHERME"], ["14/05/2025", "PM DE CARPINA-PM", "TAXAS / IMPOSTOS (LOTE 1)", "Taxa da certidão narrativa", 68.73, "PIX", "GUILHERME"], ["15/05/2025", "CORA SOCIEDADE DE CREDITO (CONTADOR)", "SERVIÇO - CONTABILIDADE", "Contabilidade", 500.0, "PIX", "GUILHERME"], ["26/05/2025", "Renato Luis da Silva (Pintor)", "SERVIÇO - MO PINTURA", "Contrato M.O. Pintura", 300.0, "PIX", "CAMURIM"], ["26/05/2025", "BARBOSA DISTRIBUIDORA DE TINTAS", "MATERIAL", "", 924.0, "PIX", "CAMURIM"], ["26/05/2025", "COMERCIAL DE CONSTRUCAO 2001", "MATERIAL", "", 2324.22, "PIX", "CAMURIM"], ["06/06/2025", "LEANDRO ARAUJO DA SILVA NASCIMENTO", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 1316.0, "PIX", "GUILHERME"], ["06/06/2025", "IDEAL INDUSTRIA E COMERCIO M.G. LTDA", "MATERIAL", "Orçamento de Pedras e Granitos", 2925.0, "PIX", "GUILHERME"], ["06/06/2025", "Edvilson do Nascimento Marques", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 800.0, "PIX", "GUILHERME"], ["10/06/2025", "TRIBUNAL DE JUSTICA", "TAXAS / IMPOSTOS (LOTE 1)", "Taxa para liberar a escritura", 353.43, "PIX", "GUILHERME"], ["11/06/2025", "AYRSON JAYME BELLO LOPES NETO", "ADIANTAMENTO DE LUCRO", "", 2000.0, "PIX", "GUILHERME"], ["25/06/2025", "COMERCIAL DE CONSTRUCAO 2001", "MATERIAL", "", 64.9, "PIX", "GUILHERME"], ["08/07/2025", "ESCRITORIO DE CONTABILITY", "SERVIÇO - CONTABILIDADE", "Contabilidade", 100.0, "PIX", "GUILHERME"], ["08/07/2025", "LEANDRO JEFFERSON GALDINO BEZERRA DE ANDRADE", "SERVIÇO - DESPACHANTE", "Despachante", 500.0, "PIX", "GUILHERME"], ["10/07/2025", "TRIBUNAL DE JUSTICA DE PE", "TAXAS / IMPOSTOS (LOTE 1)", "Averbacoes", 1315.64, "PIX", "DIOGO (VIA RUTH)"], ["10/07/2025", "AYRSON JAYME BELLO LOPES NETO", "ADIANTAMENTO DE LUCRO", "", 2000.0, "PIX", "GUILHERME"], ["15/07/2025", "TRIBUNAL DE JUSTICA DE PE", "TAXAS / IMPOSTOS (LOTE 1)", "Desmembramento", 917.83, "PIX", "GUILHERME"], ["18/07/2025", "MUNICIPIO DE CARPINA", "TAXAS / IMPOSTOS (LOTE 1)", "Atualizacao da planta", 56.33, "PIX", "GUILHERME"], ["30/07/2025", "LEANDRO JEFFERSON GALDINO BEZERRA DE ANDRADE", "SERVIÇO - DESPACHANTE", "Despachante", 1000.0, "PIX", "GUILHERME"], ["31/07/2025", "Caixa Economica Federal Engenharia", "TAXAS / IMPOSTOS (LOTE 1)", "Custos de Venda", 750.0, "PIX", "GUILHERME"], ["31/07/2025", "Caixa Economica Federal Engenharia", "TAXAS / IMPOSTOS (LOTE 1)", "Custos de Venda", 750.0, "PIX", "GUILHERME"], ["05/08/2025", "AYRSON JAYME BELLO LOPES NETO", "ADIANTAMENTO DE LUCRO", "", 2000.0, "PIX", "CAMURIM"], ["05/08/2025", "PRFEITURA MUNICIPAL DO RECIFE", "TAXAS / IMPOSTOS (LOTE 1)", "CIM", 511.6, "PIX", "CAMURIM"], ["05/08/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 8.5, "PIX", "CAMURIM"], ["05/08/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 189.0, "PIX", "CAMURIM"], ["06/08/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 30.92, "PIX", "CAMURIM"], ["11/08/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 152.42, "PIX", "CAMURIM"], ["11/08/2025", "SYNDEY MAXIMO CONSTRUCOES", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 836.0, "PIX", "GUILHERME"], ["11/08/2025", "AYRSON JAYME BELLO LOPES NETO", "MATERIAL", "", 408.0, "PIX", "GUILHERME"], ["14/08/2025", "ESCRITORIO DE CONTABILIDADE", "SERVIÇO - CONTABILIDADE", "Contabilidade", 100.0, "PIX", "CAMURIM"], ["21/08/2025", "Severino Caetano dos Santos", "MATERIAL", "", 262.0, "PIX", "CAMURIM"], ["21/08/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 2.33, "PIX", "CAMURIM"], ["25/08/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 69.0, "PIX", "CAMURIM"], ["29/08/2025", "Sidney Maximo Construcoes", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 600.0, "PIX", "GUILHERME"], ["29/08/2025", "Sidney Maximo Construcoes", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 840.0, "PIX", "GUILHERME"], ["04/09/2025", "EDVilson do Nascimento Marques", "SERVIÇO - MO CIVIL", "Contrato M.O. Civil", 400.0, "PIX", "GUILHERME"], ["04/09/2025", "AYRSON JAYME BELLO LOPES NETO", "ADIANTAMENTO DE LUCRO", "", 2000.0, "PIX", "RUTH"], ["05/09/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 9.64, "PIX", "CAMURIM"], ["19/09/2025", "AYRSON JAYME BELLO LOPES NETO", "MATERIAL", "", 176.0, "PIX", "RUTH"], ["19/09/2025", "Barbosa Distribuidora de Tintas Ltda", "MATERIAL", "", 1064.0, "PIX", "RUTH"], ["25/09/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 69.0, "PIX", "CAMURIM"], ["30/09/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 130.0, "PIX", "CAMURIM"], ["01/10/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 130.0, "PIX", "CAMURIM"], ["02/10/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 130.0, "PIX", "CAMURIM"], ["03/10/2025", "ESCRITORIO DE CONTABILIDADE", "SERVIÇO - CONTABILIDADE", "Contabilidade", 200.0, "PIX", "CAMURIM"], ["06/10/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 8.5, "PIX", "CAMURIM"], ["06/10/2025", "AYRSON JAYME BELLO LOPES NETO", "ADIANTAMENTO DE LUCRO", "", 2000.0, "PIX", "CAMURIM"], ["06/10/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 8.5, "PIX", "CAMURIM"], ["06/10/2025", "Júlio César Ribeiro", "SERVIÇO - MO PINTURA", "Contrato M.O. Pintura", 1400.0, "PIX", "CAMURIM"], ["06/10/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 8.5, "PIX", "CAMURIM"], ["08/10/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 8.5, "PIX", "CAMURIM"], ["08/10/2025", "Jucepe (via conta C6)", "TAXAS / IMPOSTOS (CAMURIM)", "Taxa Jucepe", 396.0, "PIX", "CAMURIM"], ["27/10/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCÁRIAS", "TAXAS BANCÁRIAS", 39.75, "PIX", "CAMURIM"], ["31/10/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 29.25, "PIX", "CAMURIM"], ["31/10/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 130.0, "PIX", "CAMURIM"], ["31/10/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 8.5, "PIX", "CAMURIM"], ["31/10/2025", "GUILHERME FALCAO LOPES", "TAXAS / IMPOSTOS (LOTE 1)", "SEGURO", 775.28, "PIX", "CAMURIM"], ["31/10/2025", "GUILHERME FALCAO LOPES", "TAXAS / IMPOSTOS (TODOS OS LOTES)", "CERTIFICADO DIGITAL CAMURIM", 180.0, "PIX", "CAMURIM"], ["31/10/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 8.5, "PIX", "CAMURIM"], ["31/10/2025", "CAIXA ECONOMICA FEDERAL", "TAXAS BANCARIAS", "TAXAS BANCARIAS", 8.5, "PIX", "CAMURIM"], ["18/12/2025", "FUNDO ESPECIAL DE REAPARELHAMENTO E MODERNIZAÇAO", "TAXAS / IMPOSTOS", "ESCRITURA DA VENDA DA CASA", 6621.04, "PIX", "CAMURIM"], ["01/12/2025", "BARBOSA DISTRIBUIDORA DE TINTAS", "MATERIAL", "TINTA", 23.0, "PIX", "AYRSON"], ["01/12/2025", "CARLOS FRANCO REPARA MURO", "SERVICO MO CIVIL", "REPARO MURO", 180.0, "PIX", "CAMURIM"], ["01/12/2025", "TRIBUNAL DE JUSTIÇA DE PERNAMBUCO", "TAXAS / IMPOSTOS", "TAXA CONVALIDAÇAO", 33.18, "PIX", "CAMURIM"], ["27/11/2025", "MUNICIPIO DE CARPINA", "TAXAS / IMPOSTOS", "ITBI (0019306784)", 3700.0, "PIX", "CAMURIM"], ["27/11/2025", "MUNICIPIO DE CARPINA", "TAXAS / IMPOSTOS", "IPTU 2025 - Parcela Unica", 146.43, "PIX", "CAMURIM"], ["14/11/2025", "JOSIAS FRANCISCO QUIRINO", "SERVICO MO CIVIL", "PEdreiro das casas", 1920.0, "PIX", "GUILHERME"], ["09/12/2025", "PREFEITURA RECIFE", "TAXAS / IMPOSTOS", "CIM do segundo semestre", 603.68, "PIX", "CAMURIM"], ["03/11/2025", "MUNICIPIO DE CARPINA", "TAXAS / IMPOSTOS", "", 1045.0, "PIX", "CAMURIM"], ["03/11/2025", "MUNICIPIO DE CARPINA", "TAXAS / IMPOSTOS", "", 1045.0, "PIX", "CAMURIM"], ["01/11/2025", "CAIXA", "TAXAS BANCARIAS", "Tarifa PIX", 130.0, "PIX", "CAMURIM"], ["03/11/2025", "CAIXA", "TAXAS BANCARIAS", "Tarifa PIX", 44.5, "PIX", "CAMURIM"], ["04/11/2025", "CAIXA", "TAXAS BANCARIAS", "Tarifa PIX", 8.5, "PIX", "CAMURIM"], ["04/11/2025", "PREFEITURA IBC", "TAXAS / IMPOSTOS", "PM DE CARPINA", 46.03, "PIX", "CAMURIM"], ["04/11/2025", "PREFEITURA IBC", "TAXAS / IMPOSTOS", "PM DE CARPINA", 46.03, "PIX", "CAMURIM"], ["05/11/2025", "DETRAN PE", "TAXAS / IMPOSTOS", "Taxa Detran", 135.7, "PIX", "CAMURIM"], ["06/11/2025", "CAIXA", "TAXAS BANCARIAS", "Tarifa PIX", 2.22, "PIX", "CAMURIM"], ["06/11/2025", "DIOGENES LIRA DA C", "SERVICO MO CIVIL", "", 250.0, "PIX", "CAMURIM"], ["12/11/2025", "JUNTA COMERCIAL", "TAXAS / IMPOSTOS", "", 30.0, "PIX", "CAMURIM"], ["18/11/2025", "GUILHERME FALCAO LOPES", "RESSARCIMENTO", "", 1920.0, "PIX", "CAMURIM"], ["18/11/2025", "RECEITA FEDERAL", "TAXAS / IMPOSTOS", "", 4752.0, "PIX", "CAMURIM"], ["25/11/2025", "TARIFA MANUTENCAO DA CONTA", "TAXAS / IMPOSTOS", "MANUTENCAO DA CONTA", 69.0, "PIX", "CAMURIM"]], "lb": [["20/01/2025", "ANGERSON JEAN SILVA QUEIROZ", "SERVIÇO - ARQUITETO (LOTE 2)", 4000.0, "arquiteto preliminar - lote sem projeto formal ainda"], ["12/02/2025", "ANGERSON JEAN SILVA QUEIROZ", "SERVIÇO - ARQUITETO (LOTE 3)", 4000.0, "arquiteto preliminar - lote sem projeto formal ainda"], ["25/03/2025", "ANGERSON JEAN SILVA QUEIROZ", "SERVIÇO - ARQUITETO (LOTE 4)", 4000.0, "arquiteto preliminar - lote sem projeto formal ainda"], ["28/03/2025", "AYRSON JAYME BELLO LOPES NETO (TERRAPLANAGEM LOTE 2)", "SERVIÇO - ALUGUEL EQUIPAMENTO (LOTE 2)", 990.0, "arquiteto/preparo preliminar - lote sem projeto formal ainda"], ["23/04/2025", "ANGERSON JEAN SILVA QUEIROZ", "SERVIÇO - ARQUITETO (LOTE 5)", 4000.0, "arquiteto preliminar - lote sem projeto formal ainda"], ["28/05/2025", "ANGERSON JEAN SILVA QUEIROZ", "SERVIÇO - ARQUITETO (LOTE 6)", 4000.0, "arquiteto preliminar - lote sem projeto formal ainda"], ["08/10/2025", "TRANSFERENCIA PARA C6 / JV", "TRANSFERENCIA", 38425.44, "aporte/transferencia para conta JV (C6)"], ["31/10/2025", "TRANSFERENCIA PARA C6 / JV", "TRANSFERENCIA", 26574.56, "aporte/transferencia para conta JV (C6)"], ["31/10/2025", "GUILHERME FALCAO LOPES", "SERVIÇO - DESPACHANTE (LOTE 2)", 250.0, "despachante preliminar - lote sem projeto formal ainda"], ["31/10/2025", "GUILHERME FALCAO LOPES", "SERVIÇO - DESPACHANTE (LOTE 3)", 250.0, "despachante preliminar - lote sem projeto formal ainda"], ["31/10/2025", "GUILHERME FALCAO LOPES", "SERVIÇO - DESPACHANTE (LOTE 4)", 250.0, "despachante preliminar - lote sem projeto formal ainda"], ["04/11/2025", "KARINA ASSIS XAVIER", "COMPRA CARRO", 49500.0, "compra de carro - nao relacionado ao negocio imobiliario"]], "vd": [["DUAS PRIMEIRAS CASAS", "Casa 1", "31/10/2025", "", 175000.0, 5400.0, 169600.0, ""], ["DUAS PRIMEIRAS CASAS", "Casa 2", "27/11/2025 (fechamento)", "Zenildo Clecio de Lira", 175000.0, 10467.47, 164532.53, "ITBI 3700 + IPTU 146.43 + Escritura 6621.04"], ["MORADA BELA", "Casa 101", "17/08/2026 (fechamento)", "", 160000.0, 19320.93, 140679.07, "Comissao 6.400 (4%) + Seguro RCPM 807,89 + Certidoes 62,52 + Taxas Caixa 2.700 + ITBI 5.000 + RGI 4.237,51 + IPTU 113,01 - todos valores reais, sem simulacao"], ["MORADA BELA", "Casa 02", "13/08/2026 (fechamento)", "", 170000.0, 20509.33, 149490.67, "Comissao 8.500 (5%) + Seguro RCPM 797,12 (reais). IPTU 101,22 + ITBI 4.537,50 + RGI 4.237,51 + Certidoes 62,52 SIMULADOS pela media de Casa 101/Casa 01 - ainda nao lancados na planilha de custos"], ["MORADA BELA", "Casa 01", "06/08/2026 (fechamento)", "", 167000.0, 18404.34, 148595.66, "Comissao 6.680 (4%) + IPTU 89,44 + ITBI 4.075 + Seguro RCPM 773,14 + Certidoes 62,52 (reais). Taxas Caixa 2.486,73 e RGI 4.237,51 SIMULADOS pela media das outras 2 vendas - ainda nao lancados na planilha de custos"]], "ev": [["Terreno Morada Bela (1 de 2)", "CAMURIM", "JV CAMURIM+ARCA", 52500.0, 70000.0, "Valorizacao de mercado do terreno na regiao", "Comprado pela Camurim a valor venal (R$52.500), integralizado na JV a valor de mercado (R$70.000). Falta confirmar data exata e qual lote (dentre os comprados) corresponde a este terreno."], ["Terreno Morada Bela II (2 de 2)", "CAMURIM", "JV CAMURIM+ARCA", 52500.0, 70000.0, "Valorizacao de mercado do terreno na regiao", "Comprado pela Camurim a valor venal (R$52.500), integralizado na JV a valor de mercado (R$70.000). Falta confirmar data exata e qual lote (dentre os comprados) corresponde a este terreno."]], "emp": [["10/10/2025", "MORADA BELA", "CAM", "TREVO FERRAGENS - FERRAGEM FUNDAÇÃO", "FERRAGEM", 2992.0], ["10/10/2025", "MORADA BELA", "CAM", "COMPRA DO LOTE 18AH", "COMPRA DO LOTE", 70000.0], ["10/10/2025", "MORADA BELA", "CAM", "PLOTAGEM DE PROJETOS - REEMBOLSO AYRSON", "PLOTAGENS E IMPRESSÕES", 170.0], ["10/10/2025", "MORADA BELA", "CAM", "ALUGUEIS - RETROESCAVADEIRA (LIMPEZA DO TERRENO)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 700.0], ["10/10/2025", "MORADA BELA", "CAM", "MADEREIRA CARPINA LTDA", "MADEIRA", 1800.0], ["13/10/2025", "MORADA BELA", "CAM", "1ª E 2ª CARRADAS DE AREIA", "AREIA", 2300.0], ["13/10/2025", "MORADA BELA", "CAM", "1ª CARRADAS DE AREIA", "BRITA", 1400.0], ["13/10/2025", "MORADA BELA", "CAM", "1ª CARRADA DE TIJOLOS 8.000", "TIJOLO", 4960.0], ["13/10/2025", "MORADA BELA", "CAM", "RR COMERCIO E SERVIÇOS - 20 SACOS DE CIMENTO", "CIMENTO (50kg)", 690.0], ["13/10/2025", "MORADA BELA", "ARC", "ALUGUEIS - MOBILIZAÇÃO DO CONTAINER", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 1700.0], ["13/10/2025", "MORADA BELA", "ARC", "ALUGUEIS - DESMOBILIZAÇÃO DO CONTAINER", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 1700.0], ["15/10/2025", "MORADA BELA", "CAM", "LIGAÇÃO PONTO DE ENERGIA", "DESPESA EXTRA", 200.0], ["15/10/2025", "MORADA BELA", "CAM", "TREVO FERRAGENS - PREGOS E ARAME", "ARAME, DISCO E PREGO", 314.2], ["15/10/2025", "MORADA BELA", "CAM", "TREVO FERRAGENS - TELA POP E CHAPA", "FERRAGEM", 488.0], ["16/10/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM DE CONSTRUÇÃO - BALDES E CARRO DE MÃO", "FERRAMENTAS, FARDAMENTOS E EPI'S", 588.0], ["16/10/2025", "MORADA BELA", "CAM", "MASSEIRAS - REEMBOLSO AYRSON", "FERRAMENTAS, FARDAMENTOS E EPI'S", 280.0], ["16/10/2025", "MORADA BELA", "ARC", "ARMAZÉM - CAL PARA MARCAÇÃO", "DESPESA EXTRA", 21.9], ["17/10/2025", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 4000.0], ["20/10/2025", "MORADA BELA", "CAM", "RR COMERCIO E SERVIÇOS - 100 SACOS DE CIMENTO", "CIMENTO (50kg)", 3700.0], ["21/10/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM DE CONSTRUÇÃO - TELHA PARA CANTEIRO", "DESPESA EXTRA", 288.0], ["21/10/2025", "MORADA BELA", "CAM", "CARMEL - RODA CARRO DE MÃO", "FERRAMENTAS, FARDAMENTOS E EPI'S", 69.26], ["22/10/2025", "MORADA BELA", "CAM", "TREVO FERRAGENS - SAPATAS E COLUNAS ", "FERRAGEM", 495.0], ["22/10/2025", "MORADA BELA", "CAM", "DISCOS DE FERRO - REEMBOLSO CAL", "ARAME, DISCO E PREGO", 52.0], ["22/10/2025", "MORADA BELA", "CAM", "RR COMERCIO E SERVIÇOS - 2 PÁS", "FERRAMENTAS, FARDAMENTOS E EPI'S", 85.0], ["23/10/2025", "MORADA BELA", "CAM", "3ª CARRADA DE AREIA", "AREIA", 1200.0], ["23/10/2025", "MORADA BELA", "CAM", "2ª CARRADAS DE BRITA", "BRITA", 1400.0], ["24/10/2025", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 3850.0], ["24/10/2025", "MORADA BELA", "CAM", "ALUGUEIS - BETONEIRA", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 330.0], ["28/10/2025", "MORADA BELA", "CAM", "2ª CARRADA DE TIJOLOS 8.000", "TIJOLO", 4960.0], ["28/10/2025", "MORADA BELA", "CAM", "TREVO FERRAGENS - FERRAGEM CINTURÃO", "FERRAGEM", 2310.0], ["29/10/2025", "MORADA BELA", "CAM", "4ª CARRADA DE AREIA", "AREIA", 1100.0], ["29/10/2025", "MORADA BELA", "CAM", "ITBI LOTE 18H", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 1045.0], ["30/10/2025", "MORADA BELA", "CAM", "MADEREIRA CARPINA LTDA", "MADEIRA", 1100.0], ["30/10/2025", "MORADA BELA", "CAM", "FRETE TÁBUAS", "MADEIRA", 50.0], ["31/10/2025", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 5110.0], ["31/10/2025", "MORADA BELA", "CAM", "CERTIDÃO REGISTRO DO LOTE", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 59.86], ["31/10/2025", "MORADA BELA", "CAM", "TAXA DA ESCRITURA", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 2105.24], ["03/11/2025", "MORADA BELA", "CAM", "3ª CARRADA DE TIJOLOS 8.000", "TIJOLO", 4960.0], ["03/11/2025", "MORADA BELA", "CAM", "PRO LABORE - ALEXANDRE", "DESPESAS EMPRESA", 3000.0], ["03/11/2025", "MORADA BELA", "CAM", "PRO LABORE - CAIO", "DESPESAS EMPRESA", 3000.0], ["03/11/2025", "MORADA BELA", "CAM", "PRO LABORE - AYRSON", "DESPESAS EMPRESA", 6000.0], ["03/11/2025", "MORADA BELA", "ARC", "ART - LOTE 18 QD AH", "PROJETO ARQUITETURA/ART", 271.47], ["04/11/2025", "MORADA BELA", "CAM", "ALUGUEIS - RETROESCAVADEIRA (ATERRO DA BASE)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 1800.0], ["04/11/2025", "MORADA BELA", "CAM", "ALUGUEIS - CAMINHÃO CAÇAMBA (ATERRO DA BASE)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 1400.0], ["04/11/2025", "MORADA BELA", "CAM", "5ª CARRADA DE AREIA", "AREIA", 1200.0], ["04/11/2025", "MORADA BELA", "CAM", "3ª CARRADAS DE BRITA", "BRITA", 1400.0], ["04/11/2025", "MORADA BELA", "CAM", "TREVO FERRAGENS - TELAS POP LAJÃO", "FERRAGEM", 712.5], ["04/11/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM - BOTA, CARRO DE MÃO, BROXA", "FERRAMENTAS, FARDAMENTOS E EPI'S", 802.0], ["04/11/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM - ARGAMASSA POLIMÉRICA", "MATERIAIS DIVERSOS", 258.0], ["05/11/2025", "MORADA BELA", "CAM", "RR COMERCIO E SERVIÇOS - 100 SACOS DE CIMENTO", "CIMENTO (50kg)", 3700.0], ["06/11/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM - 30 SACOS DE CIMENTO", "CIMENTO (50kg)", 1170.0], ["06/11/2025", "MORADA BELA", "CAM", "TREVO FERRAGENS - SUBIDA DOS PILARES", "FERRAGEM", 1527.0], ["06/11/2025", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 5500.0], ["07/11/2025", "MORADA BELA", "CAM", "COMPACTAÇÃO DO ATERRO", "ATERRO", 500.0], ["07/11/2025", "MORADA BELA", "ARC", "ALUGUEIS - CONTAINER", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 450.0], ["10/11/2025", "MORADA BELA", "CAM", "VIRTUALCONT ASSESORIA CONTAB", "DESPESAS EMPRESA", 100.0], ["11/11/2025", "MORADA BELA", "CAM", "MADEIRA PARA ANDAIMES", "MADEIRA", 1100.0], ["11/11/2025", "MORADA BELA", "CAM", "BELO LAJES - LAJE FOSSA, CISTERNA E SUMIDOURO", "VERGAS E LAJES (FOSSA, SUMI, RESERV, CAIXA DÁGUA)", 1140.0], ["11/11/2025", "MORADA BELA", "CAM", "6ª CARRADA DE AREIA", "AREIA", 1200.0], ["11/11/2025", "MORADA BELA", "CAM", "7ª CARRADA DE AREIA", "AREIA", 1100.0], ["11/11/2025", "MORADA BELA", "CAM", "ALUGUEIS - BETONEIRA + FRETE", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 460.0], ["11/11/2025", "MORADA BELA", "CAM", "FRETE TÁBUAS", "MADEIRA", 50.0], ["11/11/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM - 30 SACOS DE CIMENTO", "CIMENTO (50kg)", 1170.0], ["11/11/2025", "MORADA BELA", "CAM", "TREVO FERRAGENS - CINTA E MURO", "FERRAGEM", 2904.0], ["12/11/2025", "MORADA BELA", "CAM", "2001 - CAIXA D'ÁGUA, PNEUS", "MATERIAIS DIVERSOS", 1273.1], ["13/11/2025", "MORADA BELA", "CAM", "TREVO FERRAGENS - PREGOS E ARAME", "ARAME, DISCO E PREGO", 237.6], ["14/11/2025", "MORADA BELA", "CAM", "BELO LAJES - 1ª LAJE", "LAJE", 5472.0], ["14/11/2025", "MORADA BELA", "CAM", "BELO LAJES - VERGAS", "VERGAS E LAJES (FOSSA, SUMI, RESERV, CAIXA DÁGUA)", 533.0], ["14/11/2025", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 5100.0], ["14/11/2025", "MORADA BELA", "CAM", "TREVO FERRAGENS - TELAS POP 1ª LAJE", "FERRAGEM", 720.0], ["18/11/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM - DISCOS", "ARAME, DISCO E PREGO", 96.0], ["18/11/2025", "MORADA BELA", "CAM", "COPYMAX - PLOTAGEM DOS PROJETOS", "PLOTAGENS E IMPRESSÕES", 120.0], ["19/11/2025", "MORADA BELA", "CAM", "TREVO FERRAGENS - COLUNAS E PREGOS", "FERRAGEM", 768.0], ["19/11/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM - GRAUTE E COLA", "MATERIAIS DIVERSOS", 191.0], ["20/11/2025", "MORADA BELA", "CAM", "CÍCERO - CONCRETO E BOMBA", "CONCRETO USINADO", 5265.0], ["21/11/2025", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 5100.0], ["21/11/2025", "MORADA BELA", "CAM", "TREVO FERRAGENS - SUBIDA DOS PILARES E CINTURÃO", "FERRAGEM", 3456.0], ["21/11/2025", "MORADA BELA", "CAM", "4ª CARRADA DE TIJOLOS 8.000", "TIJOLO", 4960.0], ["27/11/2025", "MORADA BELA", "CAM", "ALMEIDA DISTRIBUIDORA - MATERIAL HIDRAULICO", "MATERIAL HIDRÁULICO", 2546.4], ["27/11/2025", "MORADA BELA", "CAM", "CERTIDÃO REGISTRO DO LOTE", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 68.73], ["28/11/2025", "MORADA BELA", "CAM", "BELO LAJES - 2ª LAJE", "LAJE", 5092.0], ["28/11/2025", "MORADA BELA", "CAM", "BELO LAJES - VERGAS", "VERGAS E LAJES (FOSSA, SUMI, RESERV, CAIXA DÁGUA)", 481.0], ["28/11/2025", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 5100.0], ["28/11/2025", "MORADA BELA", "CAM", "ARMAZÉM - MATERIAL ELÉTRICA", "MATERIAL ELÉTRICA", 917.6], ["01/12/2025", "MORADA BELA", "CAM", "TREVO FERRAGENS - TELAS POP 2ª LAJE", "FERRAGEM", 870.0], ["01/12/2025", "MORADA BELA", "CAM", "TREVO FERRAGENS - ARAME E PREGO", "ARAME, DISCO E PREGO", 220.79999999999995], ["01/12/2025", "MORADA BELA", "CAM", "GRADES DE PORTA", "ESQUADRIAS DE MADEIRA", 1400.0], ["01/12/2025", "MORADA BELA", "CAM", "ALMEIDA DISTRIBUIDORA - MATERIAL HIDRAULICO", "MATERIAL HIDRÁULICO", 1285.76], ["01/12/2025", "MORADA BELA", "CAM", "PRO LABORE - AYRSON", "DESPESAS EMPRESA", 6000.0], ["01/12/2025", "MORADA BELA", "CAM", "TAXA DE LICENÇA DE CONSTRUÇÃO", "TAXA APROVAÇÃO PROJETO", 238.22], ["01/12/2025", "MORADA BELA", "CAM", "TAXA DE LICENÇA DE CONSTRUÇÃO", "TAXA APROVAÇÃO PROJETO", 238.22], ["01/12/2025", "MORADA BELA", "CAM", "TAXA DE LICENÇA DE CONSTRUÇÃO", "TAXA APROVAÇÃO PROJETO", 248.09], ["01/12/2025", "MORADA BELA", "CAM", "TAXA DE LICENÇA DE CONSTRUÇÃO", "TAXA APROVAÇÃO PROJETO", 248.09], ["01/12/2025", "MORADA BELA", "CAM", "TAXA DE HABITE-SE", "HABITESE (TAXA/ISS/AVERBAÇÃO)", 238.22], ["01/12/2025", "MORADA BELA", "CAM", "TAXA DE HABITE-SE", "HABITESE (TAXA/ISS/AVERBAÇÃO)", 238.22], ["01/12/2025", "MORADA BELA", "CAM", "TAXA DE HABITE-SE", "HABITESE (TAXA/ISS/AVERBAÇÃO)", 248.09], ["01/12/2025", "MORADA BELA", "CAM", "TAXA DE HABITE-SE", "HABITESE (TAXA/ISS/AVERBAÇÃO)", 248.09], ["02/12/2025", "MORADA BELA", "CAM", "8ª CARRADA DE AREIA", "AREIA", 1150.0], ["02/12/2025", "MORADA BELA", "CAM", "PRO LABORE - ALEXANDRE", "DESPESAS EMPRESA", 3000.0], ["02/12/2025", "MORADA BELA", "CAM", "PRO LABORE - CAIO", "DESPESAS EMPRESA", 3000.0], ["04/12/2025", "MORADA BELA", "CAM", "MUNDO DA IMPERMEABILIZAÇÃO - ADITIVO REBOCO", "MATERIAIS DIVERSOS", 160.0], ["05/12/2025", "MORADA BELA", "CAM", "MADEREIRA CARPINA LTDA", "MADEIRA", 990.0], ["05/12/2025", "MORADA BELA", "CAM", "FRETE TÁBUAS", "MADEIRA", 50.0], ["05/12/2025", "MORADA BELA", "CAM", "TAXA DE REGISTRO", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 1876.69], ["05/12/2025", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 5100.0], ["06/12/2025", "MORADA BELA", "CAM", "FOLHA INSTALAÇÕES HIDRAULICAS - JÓ", "FOLHA INSTALAÇÕES HIDRÁULICAS", 600.0], ["06/12/2025", "MORADA BELA", "CAM", "CÍCERO - CONCRETO E BOMBA", "CONCRETO USINADO", 5000.0], ["06/12/2025", "MORADA BELA", "CAM", "FOLHA INSTALAÇÕES ELÉTRICAS - MARADONA", "FOLHA INSTALAÇÕES ELÉTRICAS", 1000.0], ["08/12/2025", "MORADA BELA", "CAM", "REEMBOLSO - CAL ", "MATERIAIS DIVERSOS", 268.0], ["09/12/2025", "MORADA BELA", "CAM", "CONTABILIDADE ", "DESPESAS EMPRESA", 1900.0], ["09/12/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM - MATERIAL HIDRAULICO", "MATERIAL HIDRÁULICO", 66.5], ["09/12/2025", "MORADA BELA", "CAM", "ALMEIDA DISTRIBUIDORA - MATERIAL HIDRAULICO (REGISTROS)", "MATERIAL HIDRÁULICO", 616.84], ["10/12/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM - MATERIAL HIDRAULICO", "MATERIAL HIDRÁULICO", 99.0], ["11/12/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM - MATERIAL HIDRAULICO", "MATERIAL HIDRÁULICO", 292.0], ["12/12/2025", "MORADA BELA", "CAM", "ALUGUEIS - ALUGUEL DE ESCORAS (PRÁTICO)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 828.0], ["12/12/2025", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 4900.0], ["12/12/2025", "MORADA BELA", "CAM", "REEMBOLSO - CAL ", "MATERIAIS DIVERSOS", 40.0], ["12/12/2025", "MORADA BELA", "CAM", "FOLHA INSTALAÇÕES HIDRAULICAS - JÓ", "FOLHA INSTALAÇÕES HIDRÁULICAS", 1200.0], ["12/12/2025", "MORADA BELA", "CAM", "9ª E 10ª CARRADA DE AREIA", "AREIA", 2350.0], ["12/12/2025", "MORADA BELA", "CAM", "ALUGUEIS - BETONEIRA (CASA DO CONSTRUTOR)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 330.04], ["13/12/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM - MATERIAL ELÉTRICA", "MATERIAL ELÉTRICA", 41.0], ["15/12/2025", "MORADA BELA", "ARC", "ALUGUEIS - CONTAINER", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 450.0], ["16/12/2025", "MORADA BELA", "CAM", "TELHA CANAL - 4.000", "TELHAS", 3200.0], ["16/12/2025", "MORADA BELA", "CAM", "FRETE - CERÂMICA", "CERÂMICA/ARGAMASSA/REJUNTE", 1000.0], ["17/12/2025", "MORADA BELA", "CAM", "VOTORANTIM - CIMENTO", "CIMENTO (50kg)", 9989.81], ["17/12/2025", "MORADA BELA", "CAM", "LUMINÁRIAS LED DE EMBUTIR", "MATERIAL ELÉTRICA", 390.0], ["17/12/2025", "MORADA BELA", "CAM", "ARGAMASSA DO MESTRE 180 SACOS 20KG", "CERÂMICA/ARGAMASSA/REJUNTE", 1692.0], ["17/12/2025", "MORADA BELA", "CAM", "FRETE ARGAMASSA", "CERÂMICA/ARGAMASSA/REJUNTE", 218.2], ["17/12/2025", "MORADA BELA", "CAM", "ALMEIDA DISTRIBUIDORA - MATERIAL ELÉTRICA", "MATERIAL ELÉTRICA", 1622.1], ["17/12/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM - MAT HIDRO", "MATERIAL HIDRÁULICO", 51.83], ["17/12/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM - MATERIAIS DIVERSOS", "MATERIAIS DIVERSOS", 16.17], ["18/12/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM - MAT HIDO", "MATERIAL HIDRÁULICO", 53.35], ["19/12/2025", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 4500.0], ["19/12/2025", "MORADA BELA", "CAM", "FOLHA INSTALAÇÕES HIDRAULICAS - JÓ", "FOLHA INSTALAÇÕES HIDRÁULICAS", 1200.0], ["19/12/2025", "MORADA BELA", "CAM", "MRE ARMAZÉM - MATERIAL ELÉTRICA", "MATERIAL ELÉTRICA", 526.0], ["19/12/2025", "MORADA BELA", "CAM", "NB SERRALHARIA - PORTÕES DE FERRO", "PORTÕES DE FERRO", 3300.0000000000005], ["19/12/2025", "MORADA BELA", "CAM", "NB SERRALHARIA - ESQUADRIAS", "ESQUADRIAS DE VIDRO", 7500.0], ["19/12/2025", "MORADA BELA", "CAM", "FOLHA INSTALAÇÕES ELÉTRICAS - MARADONA", "FOLHA INSTALAÇÕES ELÉTRICAS", 2600.0], ["22/12/2025", "MORADA BELA", "CAM", "DAE JUCEPE - ESPECÍFICA", "DESPESAS EMPRESA", 60.0], ["22/12/2025", "MORADA BELA", "CAM", "DAE JUCEPE - INTEIRO TEOR", "DESPESAS EMPRESA", 124.0], ["22/12/2025", "MORADA BELA", "CAM", "DAE JUCEPE - SIMPLIFICADA", "DESPESAS EMPRESA", 30.0], ["23/12/2025", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 4500.0], ["23/12/2025", "MORADA BELA", "CAM", "CONFRATERNIZAÇÃO DA FIRMA", "DESPESA EXTRA", 790.0], ["23/12/2025", "MORADA BELA", "CAM", "MÃO DE OBRA E MATERIAL - FORRO DE GESSO", "GESSO", 2500.0], ["31/12/2025", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 3500.0], ["05/01/2026", "MORADA BELA", "CAM", "AGR - CONTABILIDADE ", "DESPESAS EMPRESA", 1000.0], ["05/01/2026", "MORADA BELA", "CAM", "ALUGUEIS - BETONEIRA", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 380.0], ["05/01/2026", "MORADA BELA", "CAM", "11ª CARRADA DE AREIA", "AREIA", 1150.0], ["05/01/2026", "MORADA BELA", "CAM", "VIEIRA CONSTRUÇÕES - BALDES, SERRA E CADEADO", "FERRAMENTAS, FARDAMENTOS E EPI'S", 185.0], ["05/01/2026", "MORADA BELA", "CAM", "ARMAZÉM DOIS IRMÃOS - ESPAÇADORES", "FERRAMENTAS, FARDAMENTOS E EPI'S", 30.0], ["06/01/2026", "MORADA BELA", "CAM", "VIEIRA CONSTRUÇÕES", "FERRAMENTAS, FARDAMENTOS E EPI'S", 144.0], ["07/01/2026", "MORADA BELA", "CAM", "ALUGUEIS - ALUGUEL DE ESCORAS (ANDAIMES)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 360.0], ["07/01/2026", "MORADA BELA", "CAM", "MÃO DE OBRA E MATERIAL - FORRO DE GESSO", "GESSO", 1000.0], ["08/01/2026", "MORADA BELA", "CAM", "ÁGUA - CARRO PIPA", "DESPESA EXTRA", 1495.0], ["08/01/2026", "MORADA BELA", "CAM", "PRO LABORE - AYRSON", "DESPESAS EMPRESA", 6000.0], ["08/01/2026", "MORADA BELA", "CAM", "PRO LABORE - ALEXANDRE", "DESPESAS EMPRESA", 3000.0], ["08/01/2026", "MORADA BELA", "CAM", "PRO LABORE - CAIO", "DESPESAS EMPRESA", 3000.0], ["08/01/2026", "MORADA BELA", "CAM", "BRAVA TINTAS - MATERIAL PINTURA", "MATERIAL PINTURA", 5854.0], ["08/01/2026", "MORADA BELA", "CAM", "ALUGUEIS - ALUGUEL DE ESCORAS (ANDAIMES)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 410.0], ["09/01/2026", "MORADA BELA", "CAM", "TREVO FERRAGENS - MALHA", "FERRAGEM", 360.0], ["09/01/2026", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 7000.0], ["10/01/2026", "MORADA BELA", "CAM", "ALMEIDA DISTRIBUIDORA - MAT HIDRO", "MATERIAL HIDRÁULICO", 1568.0], ["10/01/2026", "MORADA BELA", "CAM", "MÃO DE OBRA E MATERIAL - FORRO DE GESSO", "GESSO", 1500.0], ["12/01/2026", "MORADA BELA", "ARC", "PAMESA - CERÂMICAS", "CERÂMICA/ARGAMASSA/REJUNTE", 3431.91], ["13/01/2026", "MORADA BELA", "ARC", "ALUGUEIS - CONTAINER", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 450.0], ["14/01/2026", "MORADA BELA", "CAM", "FOLHA INSTALAÇÕES ELÉTRICAS - MARADONA", "FOLHA INSTALAÇÕES ELÉTRICAS", 200.0], ["15/01/2026", "MORADA BELA", "ARC", "AM COMERCIAL - MAT ELÉTRICA", "MATERIAL ELÉTRICA", 2278.11], ["15/01/2026", "MORADA BELA", "ARC", "AM COMERCIAL - MAT ELÉTRICA", "MATERIAL ELÉTRICA", 107.64], ["15/01/2026", "MORADA BELA", "CAM", "INTEIRO TEOR ATUALIZADA", "AFETAÇÃO", 62.52], ["15/01/2026", "MORADA BELA", "CAM", "VIEIRA CONSTRUÇÕES", "FERRAMENTAS, FARDAMENTOS E EPI'S", 26.5], ["16/01/2026", "MORADA BELA", "CAM", "ALIZARES PARA PORTAS DE MADEIRA", "ESQUADRIAS DE MADEIRA", 630.0], ["16/01/2026", "MORADA BELA", "CAM", "KDK - PORTAS DE MADEIRA", "ESQUADRIAS DE MADEIRA", 1358.0], ["16/01/2026", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 7000.0], ["16/01/2026", "MORADA BELA", "CAM", "FOLHA PINTURA - JOEDSON", "FOLHA PINTURA", 2500.0], ["19/01/2026", "MORADA BELA", "CAM", "MRE ARMAZÉM - ARGAMASSA AC I", "CERÂMICA/ARGAMASSA/REJUNTE", 142.5], ["20/01/2026", "MORADA BELA", "CAM", "INTEIRO TEOR E CERTIDÃO VINTENÁRIA", "AFETAÇÃO", 188.01], ["22/01/2026", "MORADA BELA", "CAM", "ALMEIDA DISTRIBUIDORA - MAT HIDRO", "MATERIAL HIDRÁULICO", 1365.51], ["22/01/2026", "MORADA BELA", "CAM", "12ª CARRADA DE AREIA", "AREIA", 1500.0], ["22/01/2026", "MORADA BELA", "CAM", "4ª CARRADA DE BRITA", "BRITA", 1250.0], ["22/01/2026", "MORADA BELA", "CAM", "PAGAMENTO IPTU - LOTE 18 QAH", "IPTU", 70.79], ["22/01/2026", "MORADA BELA", "CAM", "PAGAMENTO IPTU - LOTE 18 QAH", "IPTU", 64.08], ["22/01/2026", "MORADA BELA", "CAM", "PAGAMENTO IPTU - LOTE 18 QAH", "IPTU", 60.67], ["22/01/2026", "MORADA BELA", "CAM", "PAGAMENTO IPTU - LOTE 18 QAH", "IPTU", 170.5], ["22/01/2026", "MORADA BELA", "CAM", "2001 - MATERIAL PARA CERÂMICA", "CERÂMICA/ARGAMASSA/REJUNTE", 405.33], ["23/01/2026", "MORADA BELA", "CAM", "CERTIDÕES DE PROTESTO - AFETAÇÃO", "AFETAÇÃO", 18.21], ["23/01/2026", "MORADA BELA", "CAM", "CERTIDÕES DE PROTESTO - AFETAÇÃO", "AFETAÇÃO", 18.21], ["23/01/2026", "MORADA BELA", "CAM", "CERTIDÕES DE PROTESTO - AFETAÇÃO", "AFETAÇÃO", 18.21], ["23/01/2026", "MORADA BELA", "CAM", "CERTIDÕES DE PROTESTO - AFETAÇÃO", "AFETAÇÃO", 18.21], ["23/01/2026", "MORADA BELA", "CAM", "CERTIDÕES DE PROTESTO - AFETAÇÃO", "AFETAÇÃO", 33.32], ["23/01/2026", "MORADA BELA", "CAM", "CERTIDÕES DE PROTESTO - AFETAÇÃO", "AFETAÇÃO", 33.32], ["23/01/2026", "MORADA BELA", "CAM", "CERTIDÕES DE PROTESTO - AFETAÇÃO", "AFETAÇÃO", 18.21], ["23/01/2026", "MORADA BELA", "CAM", "REEMBOLSO PINTURA MATERIAL - JOEDSON", "MATERIAL PINTURA", 200.0], ["23/01/2026", "MORADA BELA", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 5000.0], ["23/01/2026", "MORADA BELA", "CAM", "VAREJÃO - DESPACHO DA AFETAÇÃO", "AFETAÇÃO", 1300.0], ["27/01/2026", "MORADA BELA II", "CAM", "NAB COMERCIO - 50 SACOS DE CIMENTO", "CIMENTO (50kg)", 1925.0], ["27/01/2026", "MORADA BELA II", "CAM", "1ª CARRADA DE TIJOLO - 8000", "TIJOLO", 5200.0], ["27/01/2026", "MORADA BELA II", "CAM", "MUCK - TRANSPORTE DO CONTAINER", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 300.0], ["27/01/2026", "MORADA BELA", "CAM", "FOLHA PINTURA - JOEDSON", "FOLHA PINTURA", 2500.0], ["27/01/2026", "MORADA BELA", "CAM", "MRE ARMAZÉM - FECHADURAS E DOBRADIÇAS", "ESQUADRIAS DE MADEIRA", 1019.0], ["28/01/2026", "MORADA BELA", "CAM", "PLOTAGEM DE PROJETOS - AFETAÇÃO", "PLOTAGENS E IMPRESSÕES", 68.7], ["28/01/2026", "MORADA BELA", "ARC", "RECONHECIMENTO DE FIRMA - AFETAÇÃO", "AFETAÇÃO", 600.0], ["29/01/2026", "MORADA BELA II", "CAM", "CERTIFICADO DIGITAL", "DESPESAS EMPRESA", 199.0], ["29/01/2026", "MORADA BELA", "CAM", "CASA DOS PARAFUSOS - PARAFUROS LONGOS", "MATERIAL ELÉTRICA", 28.5], ["29/01/2026", "MORADA BELA", "CAM", "MARCENEIRO - INSTALAÇÃO DAS PORTAS DE MADEIRA", "ESQUADRIAS DE MADEIRA", 840.0], ["30/01/2026", "MORADA BELA", "CAM", "VIEIRA CONSTRUÇÕES - REJUNTE", "CERÂMICA/ARGAMASSA/REJUNTE", 72.0], ["30/01/2026", "MORADA BELA", "CAM", "MRE ARMAZÉM - MAT ELÉTRICO", "MATERIAL ELÉTRICA", 118.5], ["30/01/2026", "MORADA BELA", "CAM", "COPYMAX - CÓPIAS", "PLOTAGENS E IMPRESSÕES", 8.0], ["30/01/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 2200.0], ["30/01/2026", "MORADA BELA", "CAM", "IDEAL GRANITOS - BALCÕES", "BALCÕES E GRANITOS", 5800.0], ["30/01/2026", "MORADA BELA", "CAM", "LEANDRO - CUBAS PARA BALCÕES", "BALCÕES E GRANITOS", 859.0], ["30/01/2026", "MORADA BELA", "CAM", "FOLHA INSTALAÇÕES ELÉTRICAS - MARADONA", "FOLHA INSTALAÇÕES ELÉTRICAS", 1700.0], ["30/01/2026", "MORADA BELA", "CAM", "ALUGUEIS - BETONEIRA (CASA DO CONSTRUTOR)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 303.45], ["03/02/2026", "MORADA BELA II", "CAM", "PRO LABORE - AYRSON", "DESPESAS EMPRESA", 6000.0], ["03/02/2026", "MORADA BELA II", "CAM", "PRO LABORE - ALEXANDRE", "DESPESAS EMPRESA", 3000.0], ["03/02/2026", "MORADA BELA II", "CAM", "PRO LABORE - CAIO", "DESPESAS EMPRESA", 3000.0], ["03/02/2026", "MORADA BELA II", "CAM", "THOMAS - FERRAGENS", "FERRAGEM", 4297.83], ["03/02/2026", "MORADA BELA II", "CAM", "THOMAS - FERRAGENS", "FERRAGEM", 2092.7], ["04/02/2026", "MORADA BELA II", "CAM", "GRÁFICA ATITUDE", "PLOTAGENS E IMPRESSÕES", 80.0], ["05/02/2026", "MORADA BELA", "CAM", "AGR - CONTABILIDADE ", "DESPESAS EMPRESA", 2000.0], ["06/02/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 4000.0], ["06/02/2026", "MORADA BELA", "CAM", "NB SERRALHARIA - ESQUADRIAS", "ESQUADRIAS DE VIDRO", 7200.0], ["09/02/2026", "MORADA BELA II", "CAM", "NAB COMERCIO - 50 SACOS DE CIMENTO", "CIMENTO (50kg)", 1975.0], ["09/02/2026", "MORADA BELA II", "CAM", "THOMAS - FERRAGENS", "FERRAGEM", 3858.0], ["09/02/2026", "MORADA BELA", "CAM", "ALUGUEIS - ALUGUEL DE ANDAIMES (PRATICO)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 720.0], ["10/02/2026", "MORADA BELA", "ARC", "PAMESA - CERÂMICAS", "CERÂMICA/ARGAMASSA/REJUNTE", 3444.81], ["10/02/2026", "MORADA BELA II", "CAM", "ANDERSON - TIJOLOS ", "TIJOLO", 5200.0], ["10/02/2026", "MORADA BELA II", "CAM", "MADEREIRA CARPINA - TÁBUAS", "MADEIRA", 1590.0], ["13/02/2026", "MORADA BELA II", "ARC", "ALUGUEIS - CONTAINER", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 450.0], ["13/02/2026", "MORADA BELA", "ARC", "AM COMERCIAL - MAT ELÉTRICA", "MATERIAL ELÉTRICA", 2278.11], ["13/02/2026", "MORADA BELA", "ARC", "AM COMERCIAL - MAT ELÉTRICA", "MATERIAL ELÉTRICA", 107.64], ["13/02/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 5000.0], ["20/02/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 2900.0], ["25/02/2026", "MORADA BELA II", "CAM", "CERÂMICA RAIO DE LUZ - TIJOLOS", "TIJOLO", 5100.0], ["25/02/2026", "MORADA BELA II", "CAM", "3 CARRADAS DE AREIA", "AREIA", 3700.0], ["25/02/2026", "MORADA BELA II", "CAM", "1 CARRADA DE BRITA", "BRITA", 1500.0], ["25/02/2026", "MORADA BELA II", "CAM", "ALUGUEIS - CAÇAMBA RETIRADA DE MATERIAL", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 1200.0], ["25/02/2026", "MORADA BELA II", "CAM", "ALUGUEIS - RETRO ATERRO DO TERRENO", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 2300.0], ["25/02/2026", "MORADA BELA II", "CAM", "CIA BRAS - CIMENTO", "FERRAGEM", 4902.8], ["25/02/2026", "MORADA BELA II", "CAM", "ARMAZÉM DOIS IRMÃOS - ARGAMASSA POLIMÉRICA", "MATERIAIS DIVERSOS", 122.5], ["25/02/2026", "MORADA BELA II", "CAM", "ARMAZÉM DOIS IRMÃOS - ARGAMASSA POLIMÉRICA + BROCHA", "MATERIAIS DIVERSOS", 137.0], ["27/02/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 5000.0], ["27/02/2026", "MORADA BELA II", "CAM", "REEMBOLSO CAL - GASOLINA E ALUGUEL DO COMPACTADOR", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 200.0], ["27/02/2026", "MORADA BELA II", "CAM", "M.O EXTRA PARA LAJÃO", "FOLHA MÃO DE OBRA CIVIL", 400.0], ["27/02/2026", "MORADA BELA II", "CAM", "ALUGUEIS - RETRO LIMPEZA DO TERRENO", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 920.0], ["27/02/2026", "MORADA BELA II", "CAM", "JOÃO BOSCO - FERRAGENS", "FERRAGEM", 830.0], ["27/02/2026", "MORADA BELA II", "CAM", "BELO LAJES - LAJE FOSSA E RESERV", "VERGAS E LAJES (FOSSA, SUMI, RESERV, CAIXA DÁGUA)", 1220.0], ["02/03/2026", "MORADA BELA II", "CAM", "TREVO FERRAGENS - PREGO E ARAME", "ARAME, DISCO E PREGO", 262.5], ["02/03/2026", "MORADA BELA II", "CAM", "TREVO FERRAGENS - FERRAGENS", "FERRAGEM", 5352.0], ["02/03/2026", "MORADA BELA II", "CAM", "BELO LAJES - 1ª LAJE", "LAJE", 4803.2], ["02/03/2026", "MORADA BELA", "CAM", "FOLHA INSTALAÇÕES HIDRÁULICAS - JÓ", "FOLHA INSTALAÇÕES HIDRÁULICAS", 600.0], ["02/03/2026", "MORADA BELA II", "CAM", "PRO LABORE - AYRSON", "DESPESAS EMPRESA", 6000.0], ["02/03/2026", "MORADA BELA II", "CAM", "PRO LABORE - ALEXANDRE", "DESPESAS EMPRESA", 3000.0], ["02/03/2026", "MORADA BELA II", "CAM", "PRO LABORE - CAIO", "DESPESAS EMPRESA", 3000.0], ["04/03/2026", "MORADA BELA II", "CAM", "CIMENTO", "CIMENTO (50kg)", 4902.8], ["05/03/2026", "MORADA BELA II", "CAM", "AGR - CONTABILIDADE ", "DESPESAS EMPRESA", 1000.0], ["06/03/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 5000.0], ["06/03/2026", "MORADA BELA II", "CAM", "REEMBOLSO CAL - MATERIAIS", "MATERIAIS DIVERSOS", 248.0], ["10/03/2026", "MORADA BELA II", "CAM", "CONCRETO USINADO - 1ª LAJE", "CONCRETO USINADO", 6400.0], ["10/03/2026", "MORADA BELA", "ARC", "PAMESA - CERÂMICAS", "CERÂMICA/ARGAMASSA/REJUNTE", 3444.81], ["10/03/2026", "MORADA BELA II", "CAM", "ALUGUEIS - ALUGUEL DE ANDAIMES E ESCORAS (PRATICO)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 1780.0], ["11/03/2026", "MORADA BELA II", "CAM", "ALUGUEIS - BETONEIRA (CASA DO CONSTRUTOR)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 330.02], ["11/03/2026", "MORADA BELA II", "CAM", "ALUGUEIS - BETONEIRA (CASA DO CONSTRUTOR)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 330.02], ["11/03/2026", "MORADA BELA", "CAM", "MORADA BELA - INSTITUIÇÃO DE CONDOMÍNIO PÚBLICA", "AFETAÇÃO", 1244.52], ["11/03/2026", "MORADA BELA II", "CAM", "CERÂMICA RAIO DE LUZ - TIJOLOS", "TIJOLO", 5300.0], ["13/03/2026", "MORADA BELA II", "ARC", "ALUGUEIS - CONTAINER", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 450.0], ["13/03/2026", "MORADA BELA", "CAM", "MORADA BELA - ATUALIZAÇÃO DE CERTIDÃO", "AFETAÇÃO", 49.78], ["13/03/2026", "MORADA BELA II", "CAM", "ALUGUEIS - RETROESCAVADEIRA (ROGÉRIO LOCAÇÕES)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 350.0], ["13/03/2026", "MORADA BELA II", "CAM", "1 CARRADA DE BRITA", "BRITA", 1500.0], ["13/03/2026", "MORADA BELA II", "CAM", "1 CARRADA DE AREIA", "AREIA", 1250.0], ["13/03/2026", "MORADA BELA II", "CAM", "1 CARRADA DE AREIA", "AREIA", 1200.0], ["13/03/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 5200.0], ["16/03/2026", "MORADA BELA", "ARC", "AM COMERCIAL - MAT ELÉTRICA", "MATERIAL ELÉTRICA", 2278.11], ["16/03/2026", "MORADA BELA", "ARC", "AM COMERCIAL - MAT ELÉTRICA", "MATERIAL ELÉTRICA", 107.64], ["18/03/2026", "MORADA BELA II", "CAM", "BELO LAJES - LAJE FOSSA, ESCADA E VERGAS", "VERGAS E LAJES (FOSSA, SUMI, RESERV, CAIXA DÁGUA)", 1112.0], ["18/03/2026", "MORADA BELA II", "CAM", "BELO LAJES - 2ª LAJE", "LAJE", 5187.0], ["18/03/2026", "MORADA BELA II", "CAM", "MADEREIRA CARPINA - TÁBUAS", "MADEIRA", 1375.0], ["18/03/2026", "MORADA BELA II", "CAM", "TREVO FERRAGENS - FERRAGENS", "FERRAGEM", 3227.2], ["20/03/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 5200.0], ["20/03/2026", "MORADA BELA II", "CAM", "FOLHA INSTALAÇÕES ELÉTRICAS - MARADONA", "FOLHA INSTALAÇÕES ELÉTRICAS", 1000.0], ["23/03/2026", "MORADA BELA", "CAM", "MORADA BELA - CERTIDÕES DE PROTESTO RECIFE", "AFETAÇÃO", 18.21], ["23/03/2026", "MORADA BELA", "CAM", "MORADA BELA - CERTIDÕES DE PROTESTO RECIFE", "AFETAÇÃO", 18.21], ["23/03/2026", "MORADA BELA", "CAM", "MORADA BELA - CERTIDÕES DE PROTESTO RECIFE", "AFETAÇÃO", 18.21], ["23/03/2026", "MORADA BELA", "CAM", "MORADA BELA - CERTIDÕES DE PROTESTO RECIFE", "AFETAÇÃO", 18.21], ["25/03/2026", "MORADA BELA II", "CAM", "MUNDO DA IMPERMEABILIZAÇÃO - ADITIVO REBOCO/CISTERNA", "MATERIAIS DIVERSOS", 230.0], ["27/03/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 7000.0], ["27/03/2026", "MORADA BELA II", "CAM", "REEMBOLSO CAL - MATERIAIS", "MATERIAIS DIVERSOS", 652.0], ["27/03/2026", "MORADA BELA II", "CAM", "1 CARRADA DE AREIA", "AREIA", 1300.0], ["27/03/2026", "MORADA BELA II", "CAM", "ELIEZER - GRADES DE PORTA E ALISARES", "ESQUADRIAS DE MADEIRA", 1960.0], ["28/03/2026", "MORADA BELA II", "CAM", "CONCRETO USINADO - 2ª LAJE", "CONCRETO USINADO", 5800.0], ["30/03/2026", "MORADA BELA II", "CAM", "TREVO FERRAGENS - FERRAGENS", "FERRAGEM", 460.0], ["30/03/2026", "MORADA BELA II", "CAM", "1 CARRADA DE AREIA", "AREIA", 1300.0], ["30/03/2026", "MORADA BELA II", "CAM", "FOLHA INSTALAÇÕES ELÉTRICAS - MARADONA", "FOLHA INSTALAÇÕES ELÉTRICAS", 1000.0], ["30/03/2026", "MORADA BELA II", "CAM", "CIMENTO FORTE - CIMENTO FATURADO", "CIMENTO (50kg)", 4902.8], ["31/03/2026", "LOTE 16 QAH", "CAM", "TAXA DE CESSÃO TROCA DE LOTE ", "COMPRA DO LOTE", 400.0], ["01/04/2026", "MORADA BELA II", "CAM", "ALUGUEIS - BETONEIRA (CASA DO CONSTRUTOR)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 330.02], ["02/04/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 5500.0], ["02/04/2026", "MORADA BELA II", "CAM", "REEMBOLSO CAL - MATERIAIS", "MATERIAIS DIVERSOS", 163.2], ["02/04/2026", "MORADA BELA", "CAM", "REEMBOLSO CAL - RETOQUE PINTURA", "DESPESA EXTRA", 240.0], ["02/04/2026", "MORADA BELA", "CAM", "REEMBOLSO CAL - RETOQUE GESSO", "DESPESA EXTRA", 100.0], ["02/04/2026", "MORADA BELA II", "CAM", "QUITAÇÃO DE IPTU LOTE 17AH", "IPTU", 59.15], ["02/04/2026", "LOTE 16 QAH", "CAM", "QUITAÇÃO DE IPTU LOTE 16AH", "IPTU", 73.94], ["02/04/2026", "LOTE 16 QAH", "CAM", "QUITAÇÃO DE IPTU LOTE 16AH", "IPTU", 252.51], ["02/04/2026", "MORADA BELA II", "CAM", "IBTI - LOTE 17AH", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 1306.25], ["02/04/2026", "LOTE 16 QAH", "CAM", "ITBI - LOTE 16AH", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 1306.25], ["02/04/2026", "MORADA BELA II", "CAM", "REGISTRO DA ESCRITURA - LOTE 17AH", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 2194.5], ["02/04/2026", "LOTE 16 QAH", "CAM", "REGISTRO DA ESCRITURA - LOTE 18AH", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 2194.5], ["02/04/2026", "LOTE 27AX", "CAM", "REGISTRO DA ESCRITURA - LOTE 27AX", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 2194.5], ["02/04/2026", "LOTE 32AX", "CAM", "REGISTRO DA ESCRITURA - LOTE 32AX", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 2194.5], ["06/04/2026", "MORADA BELA II", "CAM", "CIMENTO FORTE - CIMENTO FATURADO", "CIMENTO (50kg)", 4902.8], ["06/04/2026", "MORADA BELA II", "CAM", "PRO LABORE - AYRSON", "DESPESAS EMPRESA", 6000.0], ["06/04/2026", "MORADA BELA II", "CAM", "PRO LABORE - ALEXANDRE", "DESPESAS EMPRESA", 3000.0], ["06/04/2026", "MORADA BELA II", "CAM", "PRO LABORE - CAIO", "DESPESAS EMPRESA", 3000.0], ["06/04/2026", "MORADA BELA II", "CAM", "AGR - CONTABILIDADE ", "DESPESAS EMPRESA", 1000.0], ["06/04/2026", "MORADA BELA II", "CAM", "CERTIDÃO INTEIRO TEOR - LOTE 17AH", "DESPESAS CARTORIAIS", 62.6325], ["06/04/2026", "LOTE 16 QAH", "CAM", "CERTIDÃO INTEIRO TEOR - LOTE 16AH", "DESPESAS CARTORIAIS", 62.6325], ["06/04/2026", "LOTE 27AX", "CAM", "CERTIDÃO INTEIRO TEOR - LOTE 27AX", "DESPESAS CARTORIAIS", 62.6325], ["06/04/2026", "LOTE 32AX", "CAM", "CERTIDÃO INTEIRO TEOR - LOTE 32AX", "DESPESAS CARTORIAIS", 62.6325], ["09/04/2026", "MORADA BELA II", "CAM", "REGISTRO DA ESCRITURA - LOTE 17AH", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 138.055], ["09/04/2026", "LOTE 16 QAH", "CAM", "REGISTRO DA ESCRITURA - LOTE 18AH", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 138.055], ["09/04/2026", "LOTE 27AX", "CAM", "REGISTRO DA ESCRITURA - LOTE 27AX", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 138.055], ["09/04/2026", "LOTE 32AX", "CAM", "REGISTRO DA ESCRITURA - LOTE 32AX", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 138.055], ["09/04/2026", "MORADA BELA II", "CAM", "RRT - PROJETO LOTE 17AH", "PROJETO ARQUITETURA/ART", 130.64], ["09/04/2026", "MORADA BELA II", "CAM", "RRT - PROJETO LOTE 17AH", "PROJETO ARQUITETURA/ART", 130.64], ["10/04/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 5200.0], ["10/04/2026", "MORADA BELA", "CAM", "REEMBOLSO CAL - PÓS OBRA HIDRO", "MATERIAL HIDRÁULICO", 150.0], ["10/04/2026", "MORADA BELA II", "CAM", "FOLHA INSTALAÇÕES ELÉTRICAS - MARADONA", "FOLHA INSTALAÇÕES ELÉTRICAS", 2500.0], ["13/04/2026", "MORADA BELA II", "ARC", "ALUGUEIS - CONTAINER", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 450.0], ["15/04/2026", "MORADA BELA II", "CAM", "BELO LAJES - LAJE CAIXA DAGUA", "VERGAS E LAJES (FOSSA, SUMI, RESERV, CAIXA DÁGUA)", 429.0], ["15/04/2026", "MORADA BELA II", "CAM", "TREVO FERRAGENS - TELAS", "FERRAGEM", 236.0], ["15/04/2026", "MORADA BELA II", "CAM", "1 CARRADA DE AREIA", "AREIA", 1300.0], ["15/04/2026", "MORADA BELA II", "CAM", "CERÂMICA - FRETE", "CERÂMICA/ARGAMASSA/REJUNTE", 2100.0], ["15/04/2026", "LOTE 16 QAH", "CAM", "ITBI - LOTE 16AH", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 356.25], ["15/04/2026", "MORADA BELA II", "CAM", "TREVO FERRAGENS - FERRAGENS", "FERRAGEM", 1137.5], ["15/04/2026", "MORADA BELA II", "CAM", "1 CARRADA DE AREIA", "AREIA", 1400.0], ["17/04/2026", "MORADA BELA II", "CAM", "MADEREIRA CARPINA - TELHAS", "TELHAS", 3610.0], ["17/04/2026", "MORADA BELA II", "CAM", "MASSA PRONTA - ARGAMASSA E REJUNTE", "CERÂMICA/ARGAMASSA/REJUNTE", 3254.06], ["17/04/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 7200.0], ["17/04/2026", "MORADA BELA", "CAM", "REEMBOLSO CAL - PÓS OBRA PINTURA", "DESPESA EXTRA", 250.0], ["17/04/2026", "MORADA BELA", "CAM", "REEMBOLSO CAL - PÓS OBRA LIMPEZA GERAL", "DESPESA EXTRA", 300.0], ["17/04/2026", "MORADA BELA II", "CAM", "FORRO DE GESSO - MÃO DE OBRA/MATERIAL", "GESSO", 6300.0], ["22/04/2026", "MORADA BELA", "CAM", "DESPESAS CARTORIAIS DE REGISTRO DA AFETAÇÃO", "AFETAÇÃO", 5575.23], ["23/04/2026", "MORADA BELA II", "CAM", "AM COMÉRCIAL - MATERIAL ELÉTRICO", "MATERIAL ELÉTRICA", 2299.6400000000003], ["23/04/2026", "MORADA BELA II", "CAM", "AM COMÉRCIAL - MATERIAL HIDRO", "MATERIAL HIDRÁULICO", 574.9099999999999], ["23/04/2026", "MORADA BELA II", "CAM", "NB SERRALHARIA - JANELAS E PORTÕES (1ª PARCELA)", "PORTÕES DE FERRO", 3000.0], ["23/04/2026", "MORADA BELA II", "CAM", "NB SERRALHARIA - JANELAS E PORTÕES (1ª PARCELA)", "ESQUADRIAS DE VIDRO", 7800.0], ["23/04/2026", "MORADA BELA II", "CAM", "ALUGUEIS - ANDAIMES E ESCORAS (PRÁTICO)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 1496.0], ["24/04/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 6200.0], ["24/04/2026", "MORADA BELA II", "CAM", "REEMBOLSO CAL - ARGAMASSA", "CERÂMICA/ARGAMASSA/REJUNTE", 200.0], ["24/04/2026", "MORADA BELA II", "CAM", "REEMBOLSO CAL - ESPAÇADORES PARA ASSENTAMENTO", "CERÂMICA/ARGAMASSA/REJUNTE", 89.0], ["27/04/2026", "MORADA BELA II", "CAM", "TINTAS BRAVA - TINTAS", "MATERIAL PINTURA", 5974.0], ["29/04/2026", "LOTE 16 QAH", "ARC", "ART - LOTE 16AH", "PROJETO ARQUITETURA/ART", 285.59], ["30/04/2026", "MORADA BELA II", "CAM", "ALUGUEIS - BETONEIRA (CASA DO CONSTRUTOR)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 330.02], ["30/04/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 6000.0], ["30/04/2026", "MORADA BELA II", "CAM", "REEMBOLSO CAL - MATERIAL DIVERSO", "MATERIAIS DIVERSOS", 150.0], ["30/04/2026", "MORADA BELA II", "CAM", "1 CARRADA AREIA LAVADA", "AREIA", 1400.0], ["30/04/2026", "LOTE 16 QAH", "CAM", "COPY MAX - PLOTAGEM PROJETOS", "PLOTAGENS E IMPRESSÕES", 77.0], ["30/04/2026", "MORADA BELA II", "CAM", "FOLHA INSTALAÇÕES ELÉTRICAS - MARADONA", "FOLHA INSTALAÇÕES ELÉTRICAS", 1000.0], ["02/05/2026", "MORADA BELA II", "CAM", "ALMEIDA DISTRIBUIDORA - MAT ELÉTRICA", "MATERIAL ELÉTRICA", 3845.07], ["05/05/2026", "MORADA BELA II", "CAM", "TREVO FERRAGENS - ARAME E PREGO", "ARAME, DISCO E PREGO", 56.0], ["05/05/2026", "MORADA BELA II", "CAM", "TREVO FERRAGENS - POSTE", "MATERIAL ELÉTRICA", 400.0], ["05/05/2026", "MORADA BELA II", "CAM", "PREFEITURA DE CARPINA - TAXA ALVARÁ DE CONSTRUÇÃO", "TAXA APROVAÇÃO PROJETO", 1646.04], ["05/05/2026", "LOTE 16 QAH", "CAM", "PREFEITURA DE CARPINA - TAXA ALVARÁ DE CONSTRUÇÃO", "TAXA APROVAÇÃO PROJETO", 1646.04], ["08/05/2026", "MORADA BELA II", "CAM", "AGR - CONTABILIDADE ", "DESPESAS EMPRESA", 1000.0], ["08/05/2026", "MORADA BELA II", "CAM", "PREFEITURA DE CARPINA - TAXA DE CERTIDÃO NARRATIVA", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 270.0], ["08/05/2026", "MORADA BELA", "CAM", "PREFEITURA DE CARPINA - TAXA DE CERTIDÃO NARRATIVA", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 270.0], ["08/05/2026", "LOTE 16 QAH", "CAM", "PREFEITURA DE CARPINA - TAXA DE CERTIDÃO NARRATIVA", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 270.0], ["08/05/2026", "LOTE 27AX", "CAM", "PREFEITURA DE CARPINA - TAXA DE CERTIDÃO NARRATIVA", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 270.0], ["08/05/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 7000.0], ["08/05/2026", "MORADA BELA II", "CAM", "FOLHA PINTURA - ADAILTON", "FOLHA PINTURA", 2750.0], ["08/05/2026", "MORADA BELA II", "ARC", "PAMESA CERAMICA - 1ª PARCELA", "CERÂMICA/ARGAMASSA/REJUNTE", 4530.09], ["10/05/2026", "MORADA BELA II", "CAM", "2001 - CAIXAS DÁGUA", "MATERIAL HIDRÁULICO", 2188.8], ["12/05/2026", "MORADA BELA II", "CAM", "SABINO DE MELO - PORTAS", "ESQUADRIAS DE MADEIRA", 1414.0], ["12/05/2026", "MORADA BELA II", "CAM", "ALMEIDA DISTRIBUIDORA - MATERIAL HIDRO", "MATERIAL HIDRÁULICO", 2299.0], ["13/05/2026", "MORADA BELA II", "CAM", "RC COMÉRCIO - LUMINÁRIAS", "MATERIAL ELÉTRICA", 861.91], ["14/05/2026", "MORADA BELA II", "ARC", "ALUGUEIS - CONTAINER", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 495.45], ["15/05/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 3800.0], ["15/05/2026", "LOTE 16 QAH", "CAM", "LOTE 16 QAH - PROJETO ARQUITETURA", "PROJETO ARQUITETURA/ART", 750.0], ["15/05/2026", "MORADA BELA II", "CAM", "FOLHA INSTALAÇÕES ELÉTRICAS - MARADONA", "FOLHA INSTALAÇÕES ELÉTRICAS", 1000.0], ["15/05/2026", "LOTE 16 QAH", "CAM", "LOTE 16 QAH - PROJETO ARQUITETURA", "PROJETO ARQUITETURA/ART", 1500.0], ["15/05/2026", "MORADA BELA II", "CAM", "ALUGUEIS - BETONEIRA (CASA DO CONSTRUTOR)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 120.0], ["15/05/2026", "MORADA BELA II", "CAM", "ALMEIDA DISTRIBUIDORA - FECHADURAS E DOBRADIÇAS", "ESQUADRIAS DE MADEIRA", 624.4], ["15/05/2026", "MORADA BELA II", "CAM", "ALUGUEIS - ANDAIMES E ESCORAS (PRÁTICO)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 504.0], ["20/05/2026", "MORADA BELA", "CAM", "MUNDO DA IMPERMEABILIZAÇÃO - ADITIVO IMPERMEABILIZANTE", "DESPESA EXTRA", 135.0], ["20/05/2026", "MORADA BELA II", "CAM", "PREFEITURA DE CARPINA - TAXA HABITESE", "HABITESE (TAXA/ISS/AVERBAÇÃO)", 557.91], ["20/05/2026", "MORADA BELA II", "CAM", "PREFEITURA DE CARPINA - TAXA HABITESE", "HABITESE (TAXA/ISS/AVERBAÇÃO)", 557.91], ["20/05/2026", "MORADA BELA II", "CAM", "PREFEITURA DE CARPINA - TAXA HABITESE", "HABITESE (TAXA/ISS/AVERBAÇÃO)", 616.68], ["20/05/2026", "MORADA BELA II", "CAM", "PREFEITURA DE CARPINA - TAXA HABITESE", "HABITESE (TAXA/ISS/AVERBAÇÃO)", 616.68], ["22/05/2026", "MORADA BELA II", "CAM", "FOLHA INSTALAÇÕES ELÉTRICAS - MARADONA", "FOLHA INSTALAÇÕES ELÉTRICAS", 500.0], ["22/05/2026", "MORADA BELA II", "CAM", "FOLHA MÃO DE OBRA - CAL", "FOLHA MÃO DE OBRA CIVIL", 2000.0], ["22/05/2026", "MORADA BELA II", "CAM", "REEMBOLSO CAL - MATERIAIS DIVERSOS", "MATERIAIS DIVERSOS", 501.0], ["23/05/2026", "MORADA BELA II", "CAM", "AM COMÉRCIAL - MATERIAL ELÉTRICO", "MATERIAL ELÉTRICA", 2299.6400000000003], ["23/05/2026", "MORADA BELA II", "CAM", "AM COMÉRCIAL - MATERIAL HIDRO", "MATERIAL HIDRÁULICO", 574.9099999999999], ["26/05/2026", "MORADA BELA", "CAM", "REGISTRO DA AFETAÇÃO", "AFETAÇÃO", 492.32], ["01/06/2026", "MORADA BELA II", "CAM", "ALMEIDA DISTRIBUIDORA - MAT ELÉTRICA", "MATERIAL ELÉTRICA", 3845.06], ["02/06/2026", "MORADA BELA II", "CAM", "IOF CHEQUE ESPECIAL", "DESPESA EXTRA", 3.74], ["02/06/2026", "MORADA BELA II", "CAM", "JUROS CHEQUE ESPECIAL", "DESPESA EXTRA", 4.52], ["03/06/2026", "MORADA BELA", "CAM", "TAXA AVERBAÇÃO DAS UNIDADES", "CONVENÇÃO CONDOMÍNIO/REGISTRO", 2098.24], ["03/06/2026", "MORADA BELA", "CAM", "TAXA CONVENÇÃO DE CONDOMÍNIO", "CONVENÇÃO CONDOMÍNIO/REGISTRO", 622.26], ["05/06/2026", "MORADA BELA II", "CAM", "AGR - CONTABILIDADE ", "DESPESAS EMPRESA", 1000.0], ["05/06/2026", "MORADA BELA II", "CAM", "ÁGUA - CARRO PIPA", "DESPESAS EMPRESA", 2215.0], ["05/06/2026", "MORADA BELA II", "CAM", "PORTAS DE MADEIRA - INSTALAÇÃO", "ESQUADRIAS DE MADEIRA", 840.0], ["05/06/2026", "MORADA BELA", "CAM", "(MORADA BELA ) - DESPESAS PÓS OBRA GESSO", "DESPESAS EMPRESA", 200.0], ["05/06/2026", "MORADA BELA II", "CAM", "IDEAL MARMORE - BALCÕES E BANCADAS DE GRANITO", "BALCÕES E GRANITOS", 6500.0], ["05/06/2026", "MORADA BELA II", "CAM", "PORTAS E JANELAS DE VIDRO", "ESQUADRIAS DE VIDRO", 7200.0], ["11/06/2026", "MORADA BELA II", "CAM", "FOLHA PINTURA - ADAILTON", "FOLHA PINTURA", 2750.0], ["11/06/2026", "MORADA BELA", "CAM", "(MORADA BELA) - DESPESAS PÓS OBRA PINTURA", "DESPESA EXTRA", 450.0], ["11/06/2026", "MORADA BELA II", "CAM", "MATERIAL - PINCEL E VERNIZ", "MATERIAL PINTURA", 120.0], ["18/06/2026", "MORADA BELA", "CAM", "CERTIDÃO DA AFETAÇÃO", "AFETAÇÃO", 69.63], ["22/06/2026", "MORADA BELA II", "CAM", "AM COMÉRCIAL - MATERIAL ELÉTRICO", "MATERIAL ELÉTRICA", 2299.6400000000003], ["22/06/2026", "MORADA BELA II", "CAM", "AM COMÉRCIAL - MATERIAL HIDRO", "MATERIAL HIDRÁULICO", 574.9], ["29/06/2026", "MORADA BELA II", "CAM", "TAXA DE REGISTRO E AVERBAÇÃO - LOTE 17 QAH", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 1965.89], ["29/06/2026", "LOTE 16 QAH", "CAM", "TAXA DE REGISTRO E AVERBAÇÃO - LOTE 16 QAH", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 1965.89], ["29/06/2026", "LOTE 27AX", "CAM", "TAXA DE REGISTRO E AVERBAÇÃO - LOTE 27 QAX", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 1965.895], ["29/06/2026", "LOTE 32AX", "CAM", "TAXA DE REGISTRO E AVERBAÇÃO - LOTE 32 QAX", "TAXAS REGISTRO DO LOTE/AVERBAÇÕES LOTE", 1965.895], ["30/06/2026", "MORADA BELA II", "CAM", "ALUGUEIS - BETONEIRA E ANDAIMES (PRATICO)", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 1110.0], ["30/06/2026", "MORADA BELA", "CAM", "TAXAS DE DESPESAS CARTORIAIS - HABITE-SE", "HABITESE (TAXA/ISS/AVERBAÇÃO)", 250.08], ["01/07/2026", "MORADA BELA II", "CAM", "ALMEIDA DISTRIBUIDORA - MAT ELÉTRICA", "MATERIAL ELÉTRICA", 3845.06], ["02/07/2026", "MORADA BELA II", "CAM", "IOF CHEQUE ESPECIAL", "DESPESA EXTRA", 9.85], ["02/07/2026", "MORADA BELA II", "CAM", "JUROS CHEQUE ESPECIAL", "DESPESA EXTRA", 74.69], ["02/07/2026", "MORADA BELA", "CAM", "(MORADA BELA) - CERTIDÕES DE INTEIRO TEOR", "INTEIRO TEOR", 615.4], ["02/07/2026", "MORADA BELA", "CAM", "(MORADA BELA - TAXA DE ENGENHARIA CAIXA CASA 01", "CASA01 - ENGENHARIA", 750.0], ["02/07/2026", "MORADA BELA", "CAM", "(MORADA BELA - TAXA DE ENGENHARIA CAIXA CASA 02", "CASA02 - ENGENHARIA", 750.0], ["02/07/2026", "MORADA BELA", "CAM", "(MORADA BELA - TAXA DE ENGENHARIA CAIXA CASA 101", "CASA101 - ENGENHARIA", 750.0], ["02/07/2026", "MORADA BELA", "CAM", "(MORADA BELA - TAXA DE ENGENHARIA CAIXA CASA 102", "CASA102 - ENGENHARIA", 750.0], ["06/07/2026", "MORADA BELA II", "CAM", "AGR - CONTABILIDADE ", "DESPESAS EMPRESA", 1350.0], ["03/07/2026", "MORADA BELA II", "ARC", "PAMESA CERAMICA - 3ª PARCELA", "CERÂMICA/ARGAMASSA/REJUNTE", 4443.45], ["14/07/2026", "MORADA BELA II", "ARC", "ALUGUEIS - CONTAINER", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 450.0], ["13/08/2026", "MORADA BELA II", "ARC", "ALUGUEIS - CONTAINER", "LOCAÇÃO DE EQUIPAMENTOS - RETRO, MUNCK, CONTAINER, OUTROS", 450.0], ["05/09/2026", "MORADA BELA", "CAM", "INSS/CNO - custo da JV (Camurim+Arca, 50/50) - SIMULACAO OBRA CONJ. HABITACIONAL POPULAR (CNO 90.026.85484/73)", "IMPOSTOS - INSS/CNO OBRA", 14505.51], ["05/09/2026", "MORADA BELA II", "CAM", "INSS/CNO - custo da JV (Camurim+Arca, 50/50) - SIMULACAO OBRA CONJ. HABITACIONAL POPULAR (CNO 90.030.38852/74)", "IMPOSTOS - INSS/CNO OBRA", 18438.80], ["25/02/2026", "MORADA BELA II", "CAM", "COMPRA DO LOTE 17AH (integralizacao JV - data aproximada nao confirmada)", "COMPRA DO LOTE", 70000.0], ["08/10/2025", "LOTE 16 QAH", "CAM", "COMPRA DO LOTE (land bank reatribuido ao projeto)", "COMPRA DO LOTE", 52250.0], ["08/10/2025", "LOTE 27AX", "CAM", "COMPRA DO LOTE (land bank reatribuido ao projeto)", "COMPRA DO LOTE", 52389.28], ["08/10/2025", "LOTE 32AX", "CAM", "COMPRA DO LOTE (land bank reatribuido ao projeto)", "COMPRA DO LOTE", 52389.28]], "atas": [["11/07/2025", "Exemplo - compra de cimento", "Definir novo fornecedor de cimento para reduzir custo em Morada Bela e Morada Bela II", "Guilherme", "18/07/2025", "Resolvido", "17/07/2025", "Fechado com a RR Comercio - preco negociado"], ["17/07/2026", "Extrato mensal da conta da JV", "Guilherme envia extrato da conta da JV de todos os meses enquanto a JV estiver ativa - para encontro de contas", "Guilherme", "17/07/2026", "Resolvido", "26/07/2026", "Extrato enviado e usado na conciliacao com empreendimentos_jv.csv (ver item Encontro de contas Arca x Camurim)"], ["17/07/2026", "Encontro de contas Arca x Camurim", "Validar o acerto de contas entre Arca e Camurim comparando a planilha de custos com as despesas reais", "Rafael e Diogo", "", "Parcialmente resolvido", "20/07/2026", "Extrato bancario da conta JV (C6) conciliado com empreendimentos_jv.csv - ver Conciliacao_Extrato_JV_x_Custos.xlsx. Custos batem (sem achados de gasto nao registrado). Acerto 50/50 confirmado para Morada Bela II (aporte a aporte, aportes_jv.csv): Camurim R$1.250 acima do alvo - Arca aporta mais R$2.500 ou reembolsa R$1.250 direto. Para Morada Bela I, extrato mostra R$240.174,56 (Camurim) x R$194.582,31 (Arca), mas NAO tratamos isso como aporte real confirmado - essa JV roteia parte do aporte da Arca pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro. Pendente: confirmar com a propria Arca o aporte real dela em Morada Bela I antes de fechar esse numero (corrigido em 26/07/2026 apos questionamento do Rafael - a primeira leitura tinha tratado o dado do extrato como aporte real de cada empresa, o que inflava indevidamente o valor devido pela Arca)."], ["17/07/2026", "Reuniao com Arca - destituicao da JV", "Agendar reuniao com a Arca para destituicao da JV", "Guilherme", "", "Pendente", "", "Prazo: na sequencia do levantamento do encontro de contas (planilha e conta)"], ["17/07/2026", "Memorial descritivo - Habite-se lote 17", "Alexandre envia o memorial descritivo do condominio para dar entrada no Habite-se do lote 17", "Ayrson", "22/07/2026", "Pendente", "", "Prazo estimado: 5 dias apos o envio (Alexandre enviaria em 17/07)"], ["17/07/2026", "Duas Primeiras Casas - telhado e pintura", "Terminar o telhado nessa semana quando chegarem as mantas e avaliar quando fazer a pintura de um quarto de uma das casas", "Ayrson", "24/07/2026", "Pendente", "", "Prazo estimado: proxima semana (mencionado na reuniao de 17/07)"], ["13/07/2026", "Reembolso do aporte de 13/07 - Diogo para Guilherme", "Guilherme adiantou R$2400 do aporte de 13/07/2026 (R$800 de cada socio - Rafael, Diogo, Guilherme). Rafael ja reembolsou sua parte direto a Guilherme. Falta Diogo reembolsar R$800 a Guilherme para zerar a conta desse aporte", "Diogo", "", "Pendente", "", "Reembolso entre socios - nao passa pelo caixa da Camurim"], ["03/07/2026", "Reembolso do aporte JV de 03/07 - Diogo para Guilherme", "Guilherme adiantou R$2500 (aporte da Camurim na JV para Morada Bela II - ver aportes_jv.csv) dividido em 3 partes de aprox R$833,33 (Rafael, Diogo, Guilherme). Rafael ja reembolsou sua parte direto a Guilherme. Falta Diogo reembolsar aprox R$833,33 a Guilherme", "Diogo", "", "Pendente", "", "Reembolso entre socios - nao passa pelo caixa da Camurim; confirmado por Rafael em 20/07/2026"], ["05/09/2026", "Acerto de contas entre socios - reembolso de aportes desde junho/2026", "Socios decidiram que os ultimos aportes feitos desde junho/2026 serao reembolsados pela receita da Camurim no negocio (Morada Bela / Morada Bela II). Valores: Rafael R$2.834,00; Diogo R$2.000,00; Guilherme R$20.753,54 (total R$25.587,54)", "Camurim (caixa da empresa)", "", "Pendente", "", "Registrado em capital_social.csv com status A REEMBOLSAR (nao conta no capital corrente ate o pagamento sair de fato). Sera pago com receita das vendas de Morada Bela/Morada Bela II - sem data definida ainda."], ["05/09/2026", "Correcao no capital social - duplicidade e aportes faltantes de Guilherme", "Rafael identificou 3 lancamentos duplicados em capital_social.csv (Guilherme 03/07, Diogo 08/07 e Rafael 08/07, R$834,00 cada) referentes ao mesmo aporte de R$2.500 na JV ja registrado corretamente como 833,33/833,33/833,34 - removidos. Tambem foram incluidos 6 aportes proprios de Guilherme ainda nao lancados: R$1.350,00 e R$535,54 (10/08), R$5.000,00 (17/08), R$3.000,00 (26/08), R$4.200,00 (27/08) e R$3.000,00 (28/08) - total R$17.085,54", "Rafael", "", "Resolvido", "05/09/2026", "Confirmado por Rafael: os 4 ultimos (17/08 a 28/08) tambem ja estao em aportes_jv.csv (CAMURIM, Morada Bela II); os dois de 10/08 sao so capital social, sem projeto associado ainda."]], "apjv": [["CAMURIM", "08/10/2025", 143600.0, "MORADA BELA", "Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)"], ["ARCA", "28/10/2025", 20000.0, "MORADA BELA", "Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)"], ["ARCA", "29/10/2025", 15003.54, "MORADA BELA", "Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)"], ["CAMURIM", "31/10/2025", 26574.56, "MORADA BELA", "Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)"], ["ARCA", "13/11/2025", 20000.0, "MORADA BELA", "Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)"], ["ARCA", "14/11/2025", 41574.56, "MORADA BELA", "Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)"], ["ARCA", "21/11/2025", 35000.0, "MORADA BELA", "Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)"], ["CAMURIM", "14/12/2025", 30000.0, "MORADA BELA", "Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)"], ["ARCA", "16/12/2025", 23004.21, "MORADA BELA", "Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)"], ["CAMURIM", "07/01/2026", 20000.0, "MORADA BELA", "Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)"], ["ARCA", "08/01/2026", 20000.0, "MORADA BELA", "Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)"], ["CAMURIM", "19/01/2026", 20000.0, "MORADA BELA", "Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)"], ["ARCA", "23/01/2026", 20000.0, "MORADA BELA", "Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)"], ["ARCA", "24/02/2026", 30000.0, "MORADA BELA II", ""], ["ARCA", "02/03/2026", 20000.0, "MORADA BELA II", ""], ["ARCA", "04/03/2026", 25000.0, "MORADA BELA II", ""], ["ARCA", "11/03/2026", 20000.0, "MORADA BELA II", ""], ["ARCA", "18/03/2026", 20000.0, "MORADA BELA II", ""], ["ARCA", "28/03/2026", 20000.0, "MORADA BELA II", ""], ["ARCA", "14/04/2026", 20000.0, "MORADA BELA II", ""], ["ARCA", "30/04/2026", 20000.0, "MORADA BELA II", ""], ["ARCA", "05/05/2026", 20000.0, "MORADA BELA II", ""], ["ARCA", "26/05/2026", 10000.0, "MORADA BELA II", ""], ["ARCA", "05/06/2026", 10000.0, "MORADA BELA II", ""], ["ARCA", "30/06/2026", 12000.0, "MORADA BELA II", ""], ["ARCA", "17/08/2026", 5000.0, "MORADA BELA II", ""], ["CAMURIM", "", 70000.0, "MORADA BELA II", "Integralizacao do terreno Morada Bela II (ver eventos_ativos.csv) - data exata nao informada"], ["CAMURIM", "03/02/2026", 30000.0, "MORADA BELA II", ""], ["CAMURIM", "09/02/2026", 15000.0, "MORADA BELA II", ""], ["CAMURIM", "02/04/2026", 20000.0, "MORADA BELA II", ""], ["CAMURIM", "06/04/2026", 20000.0, "MORADA BELA II", ""], ["CAMURIM", "17/04/2026", 20000.0, "MORADA BELA II", ""], ["CAMURIM", "23/04/2026", 20000.0, "MORADA BELA II", ""], ["CAMURIM", "15/05/2026", 10000.0, "MORADA BELA II", ""], ["CAMURIM", "05/06/2026", 10000.0, "MORADA BELA II", ""], ["CAMURIM", "29/06/2026", 12000.0, "MORADA BELA II", ""], ["CAMURIM", "03/07/2026", 2500.0, "MORADA BELA II", "Aporte pago em dinheiro (nao em PIX) - por isso nao aparece no extrato bancario da conta JV. Adiantado pessoalmente por Guilherme - ver capital_social.csv (split Rafael/Diogo/Guilherme) e atas.csv (pendencia Diogo)"], ["CAMURIM", "17/08/2026", 5000.0, "MORADA BELA II", ""], ["CAMURIM", "26/08/2026", 3000.0, "MORADA BELA II", ""], ["CAMURIM", "27/08/2026", 4200.0, "MORADA BELA II", ""], ["CAMURIM", "28/08/2026", 3000.0, "MORADA BELA II", ""]]};
+const CUSTO_VENDA_PCT_BENCHMARK_DUAS_CASAS = 0.0453; // 4.53% do VGV - media Casa 1 (3.09%) + Casa 2 (5.98%). So usado como benchmark historico das duas primeiras casas - nao usado mais para projetar Morada Bela.
+const CUSTO_VENDA_PCT_BENCHMARK = 0.1172; // 11,72% do VGV - atualizado em 05/09/2026 com a media real das 3 primeiras vendas de Morada Bela I (Casa 101 12,08%, Casa 02 12,06%, Casa 01 11,02% - ver vendas.csv). Usado para projetar as unidades de Morada Bela/Morada Bela II ainda nao vendidas (mais alto que o benchmark antigo de Duas Casas porque as vendas financiadas pela Caixa tem taxas de cartorio/ITBI/seguro bem maiores que uma venda a vista).
+
+function csRowsPagas(rows){
+  // So conta como capital "de verdade" hoje o que esta com status PAGO. Aportes marcados para reembolso futuro
+  // (ex.: "A REEMBOLSAR") ainda sao capital ate o reembolso acontecer de fato - mas por seguranca/transparencia
+  // qualquer status diferente de PAGO fica de fora dos totais correntes (ver aba Capital Social pra ver o que e).
+  return rows.filter(r=>r.status==='PAGO' && r.valor!==null);
+}
+function csEmbedToRows(){
+  return EMBED.cs.map(r => ({
+    socio: r[0], dataStr: r[1], date: parseDateBR(r[1]), valor: r[2], status: r[3], metodo: r[4], pagoPor: r[5] || undefined
+  }));
+}
+function dcEmbedToRows(){
+  return EMBED.dc.map(r => ({
+    dataStr: r[0], date: parseDateBR(r[0]), fornecedor: r[1], categoria: r[2], item: r[3], valor: r[4], metodo: r[5], origem: r[6]
+  }));
+}
+function computeDuasCasas(){
+  const custoRows = dcEmbedToRows();
+  const totalCusto = custoRows.reduce((s,r)=>s+r.valor,0);
+  const vendas = vendasRows().filter(v=>v.projeto==='DUAS PRIMEIRAS CASAS');
+  const vgv = vendas.reduce((s,v)=>s+v.valorVenda,0);
+  const despesasVenda = vendas.reduce((s,v)=>s+v.despesasVenda,0);
+  const margem = vgv - totalCusto - despesasVenda;
+  const porCategoria = {};
+  custoRows.forEach(r => { porCategoria[r.categoria] = (porCategoria[r.categoria]||0) + r.valor; });
+  const mensal = {};
+  custoRows.forEach(r => { const mk = monthKey(r.date); mensal[mk] = (mensal[mk]||0) + r.valor; });
+  return { custoRows, totalCusto, vendas, vgv, despesasVenda, margem, porCategoria, mensal, unidades: vendas.length };
+}
+function landBankRows(){
+  return EMBED.lb.map(r => ({ dataStr:r[0], date: parseDateBR(r[0]), fornecedor:r[1], categoria:r[2], valor:r[3], nota:r[4] }));
+}
+function eventosAtivosRows(){
+  return EMBED.ev.map(r => ({ ativo:r[0], deEntidade:r[1], paraEntidade:r[2], valorCusto:r[3], valorIntegralizacao:r[4], motivo:r[5], obs:r[6] }));
+}
+function empEmbedToRows(){
+  return EMBED.emp.map(r => ({ dataStr:r[0], date: parseDateBR(r[0]), projeto:r[1], conta:r[2], descricao:r[3], aplicacao:r[4], valor:r[5] }));
+}
+function atasEmbedToRows(){
+  return EMBED.atas.map(r => ({
+    dataReuniao:r[0], dataReuniaoDate: parseDateBR(r[0]), tema:r[1], descricao:r[2], responsavel:r[3],
+    prazo:r[4], prazoDate: parseDateBR(r[4]), status: norm(r[5]), dataResolucao:r[6], dataResolucaoDate: parseDateBR(r[6]), observacoes:r[7]
+  }));
+}
+function aportesJvRows(){
+  return EMBED.apjv.map(r => ({ empresa:r[0], dataStr:r[1], date: parseDateBR(r[1]), valor:r[2], projeto:r[3], observacoes:r[4] }));
+}
+function computeAportesJV(rows){
+  // Divisao acordada da JV: 50% Camurim / 50% Arca (receita e responsabilidade de aporte).
+  const SPLIT_ALVO = 0.5;
+  const porEmpresa = {};
+  rows.forEach(r => { porEmpresa[r.empresa] = (porEmpresa[r.empresa]||0) + r.valor; });
+  const total = Object.values(porEmpresa).reduce((s,v)=>s+v,0);
+  const pctPorEmpresa = {};
+  Object.keys(porEmpresa).forEach(k => { pctPorEmpresa[k] = total ? porEmpresa[k]/total : 0; });
+  // saldoParaAcertar > 0 = empresa aportou A MAIS que os 50% (credito, tem que ser reembolsada ou aportar menos depois).
+  // saldoParaAcertar < 0 = empresa aportou A MENOS que os 50% (deve aportar a diferenca para igualar).
+  const alvoPorEmpresa = total * SPLIT_ALVO;
+  const saldoParaAcertar = {};
+  Object.keys(porEmpresa).forEach(k => { saldoParaAcertar[k] = porEmpresa[k] - alvoPorEmpresa; });
+  return { rows, porEmpresa, total, pctPorEmpresa, alvoPorEmpresa, saldoParaAcertar, splitAlvo: SPLIT_ALVO };
+}
+
+/* ===================== HELPERS ===================== */
+function brl(v){ if(v===null||v===undefined||isNaN(v)) return "—"; return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+function brlK(v){ if(v===null||v===undefined||isNaN(v)) return "—"; return (v/1000).toLocaleString('pt-BR',{maximumFractionDigits:0})+"K"; }
+function pct(v){ return (v*100).toLocaleString('pt-BR',{maximumFractionDigits:1})+"%"; }
+function cap(s){ return (s||'').split(' ').map(w=>w.length<=3 && w===w.toUpperCase() ? w : (w.charAt(0)+w.slice(1).toLowerCase())).join(' '); }
+function norm(s){ return (s||'').trim().toUpperCase().replace(/\s+/g,' '); }
+function fmtDateShort(d){ return d ? d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'}) : '—'; }
+function monthKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+function monthLabel(key){ const [y,m] = key.split('-').map(Number); return new Date(y,m-1,1).toLocaleDateString('pt-BR',{month:'short',year:'2-digit'}); }
+function parseDateBR(s){ if(!s) return null; const m = s.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); if(!m) return null; return new Date(+m[3], +m[2]-1, +m[1]); }
+
+/* ===================== ROI vs IPCA+6% ===================== */
+function monthsBetween(mkFrom, mkTo){
+  const [yf,mf] = mkFrom.split('-').map(Number);
+  const [yt,mt] = mkTo.split('-').map(Number);
+  return (yt-yf)*12 + (mt-mf);
+}
+function addMonthsToKey(mk, n){
+  const [y,m] = mk.split('-').map(Number);
+  const d = new Date(y, m-1+n, 1);
+  return monthKey(d);
+}
+function ipcaFactorMes(mk){
+  if(IPCA_MENSAL[mk] !== undefined) return 1 + IPCA_MENSAL[mk];
+  return 1 + IPCA_MENSAL[IPCA_ULTIMO_MES]; // fora da tabela (mes futuro): usa o ultimo conhecido como estimativa
+}
+function fatorAcumulado(mkFrom, mkTo, comExtra){
+  if(monthsBetween(mkFrom, mkTo) < 0) return 1;
+  let fator = 1, mk = mkFrom;
+  while(true){
+    fator *= ipcaFactorMes(mk);
+    if(comExtra) fator *= (1 + RETORNO_EXTRA_MENSAL);
+    if(mk === mkTo) break;
+    mk = addMonthsToKey(mk, 1);
+  }
+  return fator;
+}
+function valorFuturoIPCA6(valor, dataAporte, mkFinal){
+  return valor * fatorAcumulado(monthKey(dataAporte), mkFinal, true);
+}
+function computeROI(csRowsRaw, margemCamurimIsolada){
+  const csRows = csRowsPagas(csRowsRaw);
+  const mkFinal = IPCA_ULTIMO_MES;
+  const totalAportado = csRows.reduce((s,r)=>s+r.valor,0);
+  const valorHipoteticoIPCA6 = csRows.reduce((s,r)=> s + valorFuturoIPCA6(r.valor, r.date, mkFinal), 0);
+  const valorAtualNegocio = totalAportado + margemCamurimIsolada;
+  const diferenca = valorAtualNegocio - valorHipoteticoIPCA6;
+  const rendimentoIPCA6 = valorHipoteticoIPCA6 - totalAportado;
+
+  // Serie mensal: capital aportado acumulado (nominal) vs. o que esse mesmo capital valeria acumulado a IPCA+6%, mes a mes.
+  const meses = Object.keys(IPCA_MENSAL).sort();
+  const serieMensal = meses.map(mk => {
+    const aportesAteAqui = csRows.filter(r => monthKey(r.date) <= mk);
+    const cumAportado = aportesAteAqui.reduce((s,r)=>s+r.valor,0);
+    const cumBenchmark = aportesAteAqui.reduce((s,r)=> s + valorFuturoIPCA6(r.valor, r.date, mk), 0);
+    return { mk, cumAportado, cumBenchmark };
+  });
+
+  return { totalAportado, valorHipoteticoIPCA6, valorAtualNegocio, diferenca, rendimentoIPCA6, serieMensal, mkFinal };
+}
+
+const endLabelPlugin = {
+  id: 'endLabel',
+  afterDatasetsDraw(chart){
+    const {ctx} = chart;
+    chart.data.datasets.forEach((ds,i)=>{
+      const meta = chart.getDatasetMeta(i);
+      if(meta.hidden) return;
+      const pt = meta.data[meta.data.length-1];
+      if(!pt) return;
+      ctx.save();
+      ctx.font = '700 11px Calibri, sans-serif';
+      ctx.fillStyle = ds.borderColor;
+      ctx.textBaseline = 'middle';
+      ctx.fillText(ds.label, pt.x + 6, pt.y);
+      ctx.restore();
+    });
+  }
+};
+Chart.register(endLabelPlugin);
+const baseGrid = { display:false };
+const baseFont = { size:11, family:"Calibri, sans-serif" };
+
+/* ===================== SHARED COMPUTATIONS ===================== */
+function vendasRows(){
+  return EMBED.vd.map(r => ({ projeto:r[0], unidade:r[1], dataVenda:r[2], comprador:r[3], valorVenda:r[4], despesasVenda:r[5], valorLiquido:r[6], obs:r[7] }));
+}
+
+function computeEmpreendimentos(empRows){
+  const porProjeto = {};
+  PROJETOS.forEach(p=>porProjeto[p]={ total:0, count:0, categorias:{}, cam:0, arc:0, mensal:{} });
+  empRows.forEach(r=>{
+    const p = porProjeto[r.projeto];
+    if(!p) return;
+    p.total += r.valor; p.count++;
+    p.categorias[r.aplicacao] = (p.categorias[r.aplicacao]||0) + r.valor;
+    if(r.conta==='CAM') p.cam += r.valor; else if(r.conta==='ARC') p.arc += r.valor;
+    const mk = monthKey(r.date);
+    p.mensal[mk] = (p.mensal[mk]||0) + r.valor;
+  });
+  const totalInvestido = PROJETOS.reduce((s,p)=>s+porProjeto[p].total,0);
+
+  // VGV/margem projetados so existem para os 2 projetos da JV (8 unidades no total, 4 cada).
+  // Os 3 lotes sem projeto (Camurim, land bank) ainda nao tem plano de unidades/venda - so entram como capital investido.
+  const vgvUnidadeLiquido = VALOR_VENDA_UNIDADE * (1 - CUSTO_VENDA_PCT_BENCHMARK);
+  const vgvProjetoLiquido = vgvUnidadeLiquido * UNIDADES_POR_PROJETO; // flat teorico, 4 unidades - usado so para lotes futuros (aba Projecao)
+
+  // A partir de set/2026: parte das unidades de Morada Bela/Morada Bela II ja foi vendida de verdade (vendas.csv).
+  // Pra cada projeto da JV, o VGV liquido agora e misto: realizado (valor_liquido real de vendas.csv) para as unidades
+  // ja vendidas + projetado (vgvUnidadeLiquido) para as unidades que ainda faltam vender.
+  const vendasJV = vendasRows().filter(v=>PROJETOS_JV.includes(v.projeto));
+  const vendasPorProjeto = {};
+  PROJETOS_JV.forEach(p=>{ vendasPorProjeto[p] = vendasJV.filter(v=>v.projeto===p); });
+  const vgvRealizadoPorProjeto = {};
+  const unidadesVendidasPorProjeto = {};
+  const vgvProjetoMisto = {};
+  PROJETOS_JV.forEach(p=>{
+    const vs = vendasPorProjeto[p];
+    const realizado = vs.reduce((s,v)=>s+v.valorLiquido,0);
+    const nVendidas = vs.length;
+    const nRestantes = Math.max(0, UNIDADES_POR_PROJETO - nVendidas);
+    vgvRealizadoPorProjeto[p] = realizado;
+    unidadesVendidasPorProjeto[p] = nVendidas;
+    vgvProjetoMisto[p] = realizado + nRestantes * vgvUnidadeLiquido;
+  });
+  const vgvTotal = PROJETOS_JV.reduce((s,p)=>s+vgvProjetoMisto[p],0);
+  const vgvRealizadoTotal = PROJETOS_JV.reduce((s,p)=>s+vgvRealizadoPorProjeto[p],0);
+  const unidadesVendidasTotal = PROJETOS_JV.reduce((s,p)=>s+unidadesVendidasPorProjeto[p],0);
+  const margemPorProjeto = {};
+  PROJETOS_JV.forEach(p=>{ margemPorProjeto[p] = vgvProjetoMisto[p] - porProjeto[p].total; });
+  PROJETOS_CAMURIM_LAND.forEach(p=>{ margemPorProjeto[p] = null; }); // sem VGV definido - so land bank
+  const margemTotal = PROJETOS_JV.reduce((s,p)=>s+margemPorProjeto[p],0);
+  const totalCAM = PROJETOS.reduce((s,p)=>s+porProjeto[p].cam,0);
+  const totalARC = PROJETOS.reduce((s,p)=>s+porProjeto[p].arc,0);
+
+  // JV consolidada (100% - Camurim + Arca juntos) vs. o que e "da Camurim" isoladamente (50% da JV + 100% dos lotes proprios).
+  const custoJV = PROJETOS_JV.reduce((s,p)=>s+porProjeto[p].total,0);
+  const margemJV = PROJETOS_JV.reduce((s,p)=>s+margemPorProjeto[p],0);
+  const custoLotesCamurim = PROJETOS_CAMURIM_LAND.reduce((s,p)=>s+porProjeto[p].total,0);
+  const custoCamurimEmJV = custoJV * JV_SPLIT_ARCA;
+  const margemCamurimEmJV = margemJV * JV_SPLIT_ARCA;
+  const arcaAporteEstimado = custoJV * JV_SPLIT_ARCA;
+  // Ativo (valor de mercado) != custo investido. O que a Camurim "tem" hoje na JV, se vendesse tudo, e a
+  // parte dela do VGV liquido projetado das 8 unidades (nao o que foi gasto construindo) - ainda nao vendido, e projecao.
+  const ativoProjecaoCamurim = vgvTotal * (1 - JV_SPLIT_ARCA);
+  // Aporte estimado da Camurim especificamente em Morada Bela I (sem detalhe aporte-a-aporte, ao contrario de MB II
+  // que tem aportes_jv.csv). Usa a mesma premissa de 50% do custo incorrido.
+  const aporteCamurimMB1Estimado = (porProjeto['MORADA BELA']?.total || 0) * (1 - JV_SPLIT_ARCA);
+
+  return { porProjeto, totalInvestido, vgvTotal, margemTotal, margemPorProjeto, totalCAM, totalARC,
+    vgvUnidadeLiquido, vgvProjetoLiquido, custoJV, margemJV, custoLotesCamurim, custoCamurimEmJV, margemCamurimEmJV, arcaAporteEstimado,
+    ativoProjecaoCamurim, aporteCamurimMB1Estimado, vgvRealizadoPorProjeto, unidadesVendidasPorProjeto, vgvProjetoMisto,
+    vgvRealizadoTotal, unidadesVendidasTotal };
+}
+
+/* ===================== TAB: RESUMO ===================== */
+function renderResumo(csRowsRaw, empRows, atasRows, dc){
+  const el = document.getElementById('tab-resumo');
+  const csRows = csRowsPagas(csRowsRaw);
+  const totalAportado = csRows.reduce((s,r)=>s+r.valor,0);
+  const empCarregado = !!empRows;
+  const E = computeEmpreendimentos(empRows || []);
+  const abertos = atasRows.filter(r=>r.status!=='RESOLVIDO');
+  const hoje = new Date();
+  const atrasados = atasRows.filter(r=>r.status!=='RESOLVIDO' && r.prazoDate && r.prazoDate<hoje);
+
+  // Ativo real = o que a Camurim tem hoje e nao depende de venda futura (3 terrenos, a custo).
+  // Duas Casas ja foi vendida e o caixa foi reaportado na JV - nao e mais "ativo", e resultado ja realizado.
+  // Ativo em projecao = 50% do VGV liquido de Morada Bela + Morada Bela II (as 8 unidades ainda nao vendidas).
+  const ativoRealCamurim = E.custoLotesCamurim; // 3 lotes (land bank), a custo
+  const ativoProjecaoCamurim = empCarregado ? E.ativoProjecaoCamurim : 0; // 50% do VGV liquido da JV
+
+  const porSocio = {}; SOCIOS_EQUITY.forEach(s=>porSocio[s]=0);
+  csRows.forEach(r=>{ porSocio[r.socio]=(porSocio[r.socio]||0)+r.valor; });
+  const socioLider = SOCIOS_EQUITY.filter(s=>s!=='AYRSON').sort((a,b)=>porSocio[b]-porSocio[a])[0];
+
+  el.innerHTML = `
+    <div class="exec-highlight">
+      <div class="label">Camurim hoje</div>
+      <p>Sócios aportaram <b>${brl(totalAportado)}</b>. Duas Primeiras Casas já foi vendida (resultado real de ${brl(dc.margem)}, o caixa virou capital da JV). Hoje a Camurim tem <b>${brl(ativoRealCamurim)}</b> em ativo real (3 terrenos, a custo) ${empCarregado?`e <b>${brl(ativoProjecaoCamurim)}</b> na JV (50% do VGV líquido) — <b>${E.unidadesVendidasTotal} de 8 unidades</b> já vendidas de verdade (Morada Bela I), as outras ${8-E.unidadesVendidasTotal} ainda em projeção`:'(JV ainda carregando)'}.</p>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card accent"><div class="label">Total Aportado (real)</div><div class="value">${brl(totalAportado)}</div><div class="foot">Capital Social — 3 sócios investidores</div></div>
+      <div class="kpi-card"><div class="label">Ativo Real</div><div class="value">${brl(ativoRealCamurim)}</div><div class="foot">3 terrenos (land bank), a custo</div></div>
+      <div class="kpi-card"><div class="label">Ativo na JV (real + projeção)</div><div class="value">${empCarregado?brl(ativoProjecaoCamurim):'—'}</div><div class="foot">50% do VGV líquido — ${empCarregado?E.unidadesVendidasTotal:0} de 8 unidades já vendidas (real)</div></div>
+      <div class="kpi-card warn"><div class="label">Pendências nas Atas</div><div class="value">${abertos.length}</div><div class="foot">${atrasados.length} atrasada(s)</div></div>
+    </div>
+
+    <div class="slide">
+      <div class="kicker">Posição — capital aportado por sócio</div>
+      <p class="insight">${cap(socioLider)} lidera os aportes com <b>${brl(porSocio[socioLider])}</b> (${pct(porSocio[socioLider]/totalAportado)} do total).</p>
+      <div class="chart-wrap"><canvas id="resumo-chartSocio"></canvas></div>
+    </div>
+  `;
+
+  new Chart(document.getElementById('resumo-chartSocio'), {
+    type:'bar',
+    data:{ labels: SOCIOS_EQUITY.map(cap), datasets:[{ data: SOCIOS_EQUITY.map(s=>porSocio[s]), backgroundColor: SOCIOS_EQUITY.map(s=>s==='AYRSON'?'#c9cfc7':'#16352a'), borderRadius:2, barPercentage:0.55 }] },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{ beginAtZero:true, grid:baseGrid, ticks:{ callback:v=>brlK(v), font:baseFont } }, y:{ grid:baseGrid, ticks:{ font:{size:12,weight:'700',family:'Calibri, sans-serif'} } } } }
+  });
+}
+
+/* ===================== TAB: CAPITAL SOCIAL ===================== */
+function renderCapitalSocial(rows){
+  const el = document.getElementById('tab-capital');
+  const pendentes = rows.filter(r=>r.valor===null);
+  // "validas" = capital de verdade hoje (status PAGO). Lancamentos "A REEMBOLSAR" sao uma obrigacao futura
+  // decidida pelos socios (aporte feito, mas que sera devolvido pela receita da Camurim) - ainda contam como
+  // capital ate o reembolso sair de fato, mas ficam fora dos totais correntes por transparencia (ver aReembolsar abaixo).
+  const validas = rows.filter(r=>r.valor!==null && r.status==='PAGO');
+  const aReembolsar = rows.filter(r=>r.valor!==null && r.status==='A REEMBOLSAR');
+  const totalAReembolsar = aReembolsar.reduce((s,r)=>s+r.valor,0);
+  const totalGeral = validas.reduce((s,r)=>s+r.valor,0);
+  const porSocio = {}; SOCIOS_EQUITY.forEach(s=>porSocio[s]=0);
+  validas.forEach(r=>{ porSocio[r.socio] = (porSocio[r.socio]||0) + r.valor; });
+  const porMetodo = {};
+  validas.forEach(r=>{ porMetodo[r.metodo] = (porMetodo[r.metodo]||0) + r.valor; });
+  const datas = rows.map(r=>r.date);
+  const dataMin = new Date(Math.min(...datas)), dataMax = new Date(Math.max(...datas));
+
+  const cumMap = {}; SOCIOS_EQUITY.forEach(s=>cumMap[s]=0);
+  const labels = []; const series = {}; SOCIOS_EQUITY.forEach(s=>series[s]=[]);
+  validas.forEach(r=>{
+    cumMap[r.socio] = (cumMap[r.socio]||0) + r.valor;
+    labels.push(fmtDateShort(r.date));
+    SOCIOS_EQUITY.forEach(s=> series[s].push(cumMap[s]));
+  });
+
+  const totalCash = SOCIOS_CASH.reduce((s,x)=>s+porSocio[x],0);
+  const fairShare = totalCash / SOCIOS_CASH.length;
+  const posOrder = [...SOCIOS_CASH].sort((a,b)=>porSocio[b]-porSocio[a]);
+  const gap = {}; posOrder.forEach(s=> gap[s] = porSocio[s]-fairShare);
+  const leaderVal = porSocio[posOrder[0]];
+  const acima = posOrder.filter(s=>gap[s]>0);
+  const abaixo = posOrder.filter(s=>gap[s]<0).sort((a,b)=>gap[a]-gap[b]);
+  const rafaelPrimeiro = validas.find(r=>r.socio==="RAFAEL");
+
+  let insight1;
+  if(abaixo.length && acima.length){
+    const pior = abaixo[0];
+    insight1 = `<b class="good">${acima.map(cap).join(' e ')}</b> aportaram acima do terço esperado do capital (+${brl(Math.abs(gap[acima[0]]))} cada); <b class="bad">${cap(pior)}</b> está ${brl(Math.abs(gap[pior]))} abaixo${rafaelPrimeiro && pior==='RAFAEL' ? `, refletindo a entrada mais tardia em ${fmtDateShort(rafaelPrimeiro.date)}` : ''}.`;
+  } else {
+    insight1 = `Os três sócios investidores estão próximos do terço esperado de capital aportado (${brl(fairShare)} cada).`;
+  }
+  const totalAntesRafael = rafaelPrimeiro ? validas.filter(r=>r.date < rafaelPrimeiro.date).reduce((s,r)=>s+r.valor,0) : 0;
+  const insight2 = rafaelPrimeiro
+    ? `O capital aportado saiu de zero em dez/2024 para <b>${brl(totalGeral)}</b> até ${fmtDateShort(dataMax)}. Diogo e Guilherme sustentaram <b>${brl(totalAntesRafael)}</b> sozinhos antes de Rafael começar a aportar em ${fmtDateShort(rafaelPrimeiro.date)}.`
+    : `O capital aportado saiu de zero em dez/2024 para <b>${brl(totalGeral)}</b> até ${fmtDateShort(dataMax)}.`;
+  const metodoOrder = Object.keys(porMetodo).sort((a,b)=>porMetodo[b]-porMetodo[a]);
+  const metodoLider = metodoOrder[0];
+  const insight3 = metodoLider
+    ? `<b>${brl(porMetodo[metodoLider])}</b> (${pct(porMetodo[metodoLider]/totalGeral)}) do capital entrou via <b>${metodoLider}</b> — o restante via ${metodoOrder.slice(1).join(', ') || '-'}.`
+    : `Sem dados de forma de pagamento.`;
+
+  el.innerHTML = `
+    ${pendentes.length ? `<div class="err">⚠ ${pendentes.length} lançamento(s) com valor pendente de confirmação: ${pendentes.map(p=>p.socio+' '+p.dataStr).join(', ')}.</div>` : ''}
+    <div class="kpi-grid">
+      <div class="kpi-card accent"><div class="label">Total Aportado</div><div class="value">${brl(totalGeral)}</div><div class="foot">${validas.length} lançamentos confirmados</div></div>
+      ${SOCIOS_EQUITY.map(s=>`<div class="kpi-card"><div class="label">${cap(s)}</div><div class="value">${brl(porSocio[s])}</div><div class="foot">${totalGeral?pct(porSocio[s]/totalGeral):'0%'} do capital · 25% da sociedade</div></div>`).join('')}
+      <div class="kpi-card warn"><div class="label">Pendências</div><div class="value">${pendentes.length}</div><div class="foot">valores a confirmar</div></div>
+    </div>
+    ${aReembolsar.length ? `
+    <div class="slide">
+      <div class="kicker">Acerto de contas entre sócios — a reembolsar</div>
+      <p class="insight">Os sócios decidiram que <b>${brl(totalAReembolsar)}</b> em aportes feitos desde jun/2026 serão devolvidos a ${aReembolsar.length===1?'quem aportou':'cada sócio'} pela receita da Camurim no negócio (Morada Bela/Morada Bela II). Esse valor <b>ainda não foi pago</b> — por isso não entra no Total Aportado acima nem nas demais abas, até o reembolso sair de fato.</p>
+      <div class="table-card"><h3>Reembolsos pendentes</h3>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          ${aReembolsar.map(r=>`<div style="display:flex;justify-content:space-between;padding:8px 4px;border-bottom:1px solid #eee"><span>${cap(r.socio)}</span><span style="font-weight:600">${brl(r.valor)}</span></div>`).join('')}
+          <div style="display:flex;justify-content:space-between;padding:8px 4px;font-weight:700"><span>Total</span><span>${brl(totalAReembolsar)}</span></div>
+        </div>
+      </div>
+    </div>` : ''}
+    <div class="slide">
+      <div class="kicker">Capital aportado × terço esperado</div>
+      <p class="insight">${insight1}</p>
+      <div class="pair">
+        <div class="col"><div class="col-title">Posição — capital aportado</div><div class="chart-wrap"><canvas id="cs-chartPosition"></canvas></div></div>
+        <div class="col"><div class="col-title">Direção — gap vs. terço esperado (${brl(fairShare)})</div><div class="chart-wrap"><canvas id="cs-chartGap"></canvas></div></div>
+      </div>
+    </div>
+    <div class="slide"><div class="kicker">Evolução do capital aportado</div><p class="insight">${insight2}</p><div class="chart-wrap tall"><canvas id="cs-chartCum"></canvas></div></div>
+    <div class="slide"><div class="kicker">Forma de pagamento</div><p class="insight">${insight3}</p><div class="chart-wrap"><canvas id="cs-chartMetodo"></canvas></div></div>
+    <div class="table-card"><h3>Todos os lançamentos</h3><div id="cs-gridTable"></div></div>
+  `;
+
+  new Chart(document.getElementById('cs-chartPosition'), { type:'bar',
+    data:{ labels: posOrder.map(cap), datasets:[{ data: posOrder.map(s=>porSocio[s]), backgroundColor: posOrder.map(s=> porSocio[s]===leaderVal ? '#16352a' : '#C9B183'), borderRadius:2, barPercentage:0.55 }] },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{ beginAtZero:true, grid:baseGrid, ticks:{ callback:v=>brlK(v), font:baseFont } }, y:{ grid:baseGrid, ticks:{ font:{size:12,weight:'700',family:'Calibri, sans-serif'} } } } } });
+
+  new Chart(document.getElementById('cs-chartGap'), { type:'bar',
+    data:{ labels: posOrder.map(cap), datasets:[{ data: posOrder.map(s=>gap[s]), backgroundColor: posOrder.map(s=> gap[s]>=0 ? '#2F6B49' : '#B3432B'), borderRadius:2, barPercentage:0.55 }] },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{ grid:baseGrid, ticks:{ callback:v=>brlK(v), font:baseFont } }, y:{ grid:baseGrid, ticks:{ font:{size:12,weight:'700',family:'Calibri, sans-serif'} } } } } });
+
+  new Chart(document.getElementById('cs-chartCum'), { type:'line',
+    data:{ labels, datasets: SOCIOS_EQUITY.map(s=>({ label:cap(s), data:series[s], borderColor: s==='AYRSON'?'#c3cbc2':(s===posOrder[0]?'#16352a':'#C9B183'), borderWidth: s===posOrder[0]?2.5:2, pointRadius:0, tension:0.1, fill:false })) },
+    options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{right:70}}, plugins:{legend:{display:false}},
+      scales:{ x:{ ticks:{maxTicksLimit:6,font:baseFont}, grid:baseGrid }, y:{ beginAtZero:true, ticks:{ callback:v=>brlK(v), font:baseFont }, grid:{color:'#f0f2ec'} } } } });
+
+  new Chart(document.getElementById('cs-chartMetodo'), { type:'bar',
+    data:{ labels: metodoOrder.map(cap), datasets:[{ data: metodoOrder.map(m=>porMetodo[m]), backgroundColor: metodoOrder.map((m,i)=>i===0?'#16352a':'#C9B183'), borderRadius:2, barPercentage:0.5 }] },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{ beginAtZero:true, grid:baseGrid, ticks:{ callback:v=>brlK(v), font:baseFont } }, y:{ grid:baseGrid, ticks:{ font:{size:12,weight:'700',family:'Calibri, sans-serif'} } } } } });
+
+  new gridjs.Grid({
+    columns: ["Data","Sócio","Valor","Status","Pago por","Método"],
+    data: rows.map(r=>[ r.dataStr, cap(r.socio), r.valor===null?"⚠ a confirmar":brl(r.valor), (r.status||'').replace(/\(VIA[^)]+\)/i,'').trim(), r.pagoPor||"—", r.metodo ]),
+    sort:true, search:true, pagination:{limit:15}
+  }).render(document.getElementById('cs-gridTable'));
+}
+
+/* ===================== TAB: EMPREENDIMENTOS ===================== */
+function renderEmpreendimentos(rows, dc, lb, ev, empErr, apjv){
+  const el = document.getElementById('tab-empreendimentos');
+  const empCarregado = !!rows;
+  const E = computeEmpreendimentos(rows || []);
+  const { porProjeto, margemPorProjeto, totalCAM, totalARC,
+    vgvUnidadeLiquido, vgvProjetoLiquido, custoJV, margemJV, custoLotesCamurim, custoCamurimEmJV, margemCamurimEmJV, arcaAporteEstimado,
+    ativoProjecaoCamurim } = E;
+
+  const jvNote = empCarregado ? '' : `<div class="err">Empreendimentos ainda não carregaram${empErr?': '+empErr:''}. Duas Primeiras Casas (abaixo) já está disponível normalmente.</div>`;
+
+  // BMQ 1: quanto cada empresa aportou na JV? (aportes_jv.csv cobre so Morada Bela II - unico projeto com detalhe aporte-a-aporte
+  // 100% confiavel. Morada Bela I tem dado real do extrato bancario tambem, mas NAO usamos para o alvo 50/50: o extrato so
+  // mostra o nome de quem enviou o Pix, e nessa JV o aporte da Arca costuma rotear pela conta da Camurim antes de chegar na
+  // conta da JV - entao "Pix recebido de Camurim" pode incluir dinheiro que economicamente e da Arca. Corrigido em 26/07/2026
+  // apos questionamento do Rafael - ver nota-arca-mb1 abaixo.)
+  const apjvRowsAll = apjv.rows || [];
+  const apjvMB2Rows = apjvRowsAll.filter(r=>r.projeto==='MORADA BELA II');
+  const apjvMB1Rows = apjvRowsAll.filter(r=>r.projeto==='MORADA BELA');
+  const apjvMB2 = computeAportesJV(apjvMB2Rows);
+  const apjvMB1 = computeAportesJV(apjvMB1Rows);
+  const apjvLider = Object.keys(apjvMB2.porEmpresa).sort((a,b)=>apjvMB2.porEmpresa[b]-apjvMB2.porEmpresa[a])[0];
+  const diffs = Object.entries(apjvMB2.saldoParaAcertar);
+  const credor = diffs.find(([,v])=>v>0);
+  const devedor = diffs.find(([,v])=>v<0);
+  const acertoOk = !credor || !devedor || Math.abs(credor[1]) < 0.01;
+  const diferencaEntreEmpresas = credor && devedor ? Math.abs(credor[1]) + Math.abs(devedor[1]) : 0; // = credor[1]*2, ja que os dois desvios sao simetricos
+  const insightAportes = acertoOk
+    ? `Camurim e Arca aportaram <b>${brl(apjvMB2.total)}</b> na JV, batendo exatamente a divisão 50/50 acordada.`
+    : `${cap(credor[0])} aportou <b>${brl(diferencaEntreEmpresas)}</b> a mais que ${cap(devedor[0])}. Pra ficarem 50/50: ${cap(devedor[0])} aporta mais <b>${brl(diferencaEntreEmpresas)}</b> na JV (dinheiro novo, iguala o nível de aporte) <b>ou</b> reembolsa <b>${brl(Math.abs(devedor[1]))}</b> direto a ${cap(credor[0])} (acerto de contas, sem novo aporte).`;
+  const notaArcaMB1 = `<b>Sobre Morada Bela I:</b> o extrato bancário mostra ${brl(apjvMB1.porEmpresa.CAMURIM||0)} entrando via "Pix recebido de Camurim" e ${brl(apjvMB1.porEmpresa.ARCA||0)} via "Pix recebido de Arca" — mas isso <b>não</b> deve ser lido como o aporte real de cada empresa: nessa JV, parte do aporte da Arca costuma rotear pela conta da Camurim antes de chegar na conta comum (ver observação em <code>empreendimentos_jv.csv</code>), então o valor "da Camurim" pode incluir dinheiro que economicamente é da Arca. Não incorporamos esse número no alvo 50/50 acima até confirmar com a própria Arca qual foi o aporte real de cada lado em Morada Bela I.`;
+
+  // BMQ 2: quanto de custo a JV teve nos empreendimentos?
+  const posOrderJV = empCarregado ? [...PROJETOS_JV].sort((a,b)=>porProjeto[b].total-porProjeto[a].total) : [];
+  const insightCustoJV = empCarregado
+    ? `<b>${cap(posOrderJV[0])}</b> concentra <b>${brl(porProjeto[posOrderJV[0]].total)}</b> (${pct(porProjeto[posOrderJV[0]].total/custoJV)} do custo da JV até agora).`
+    : `Aguardando dados da JV.`;
+
+  el.innerHTML = `
+    ${jvNote}
+    <div class="slide">
+      <div class="kicker">Aportes na JV — Camurim × Arca (alvo 50/50, Morada Bela II)</div>
+      <p class="insight">${insightAportes}</p>
+      <p style="font-size:11.5px;color:#9aa4b2;margin-top:6px;">${notaArcaMB1}</p>
+      <p style="font-size:11.5px;color:#9aa4b2;margin-top:6px;">Saldo atual da conta corrente da JV (C6 Bank, ag 1 / conta 399809198): <b>${brl(SALDO_CONTA_JV)}</b> (em ${SALDO_CONTA_JV_DATA}).</p>
+      <div class="chart-wrap"><canvas id="emp-chartAportesJV"></canvas></div>
+    </div>
+    <div class="slide">
+      <div class="kicker">Custo da JV nos empreendimentos (100% Camurim+Arca)</div>
+      <p class="insight">${insightCustoJV}</p>
+      <div class="chart-wrap"><canvas id="emp-chartCustoJV"></canvas></div>
+    </div>
+    <div class="slide">
+      <div class="kicker">Ativo — Camurim isolada × JV consolidada</div>
+      <p class="insight">Duas Primeiras Casas já foi vendida — o caixa virou capital da JV, não é mais "ativo" hoje. Na JV, <b>${E.unidadesVendidasTotal} das 8 unidades</b> de Morada Bela + Morada Bela II já foram vendidas de verdade (${brl(E.vgvRealizadoTotal)} líquido realizado) — as outras ${8-E.unidadesVendidasTotal} seguem em projeção. O que a Camurim tem hoje: 3 terrenos (real, a custo) + 50% do VGV líquido misto (realizado + projetado) da JV.</p>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="label">Ativo Real — Camurim</div><div class="value">${brl(custoLotesCamurim)}</div><div class="foot">3 terrenos (land bank), a custo</div></div>
+        <div class="kpi-card"><div class="label">Ativo na JV — Camurim</div><div class="value">${brl(ativoProjecaoCamurim)}</div><div class="foot">50% do VGV líquido (${E.unidadesVendidasTotal}/8 já vendidas, real)</div></div>
+        <div class="kpi-card"><div class="label">Rentabilidade Projetada — Camurim</div><div class="value" style="color:${margemCamurimEmJV>=0?'var(--good)':'var(--bad)'}">${brl(margemCamurimEmJV)}</div><div class="foot">50% do lucro esperado da JV (VGV − custo)</div></div>
+        <div class="kpi-card"><div class="label">Rentabilidade Projetada — JV consolidada</div><div class="value" style="color:${margemJV>=0?'var(--good)':'var(--bad)'}">${brl(margemJV)}</div><div class="foot">100% (Camurim+Arca), ${E.unidadesVendidasTotal}/8 unidades já vendidas</div></div>
+      </div>
+    </div>
+    <div class="proj-grid">
+      <div class="proj-card">
+        <div class="name">Duas Primeiras Casas</div>
+        <span class="chip chip-obra">Real — vendido, Camurim</span>
+        <div class="row"><span class="l">Custo</span><span class="v">${brl(dc.totalCusto)}</span></div>
+        <div class="row"><span class="l">VGV (2 casas)</span><span class="v">${brl(dc.vgv)}</span></div>
+        <div class="row"><span class="l">Margem real</span><span class="v" style="color:${dc.margem>=0?'var(--good)':'var(--bad)'}">${brl(dc.margem)}</span></div>
+        <div class="bar"><i style="width:100%"></i></div>
+      </div>
+      ${empCarregado ? PROJETOS_JV.map(p=>{
+        const d = porProjeto[p];
+        const consumido = d.total/vgvProjetoLiquido;
+        return `<div class="proj-card">
+          <div class="name">${cap(p)}</div>
+          <span class="chip chip-terreno">Projeção — JV Camurim+Arca (50/50), 4 unidades não vendidas</span>
+          <div class="row"><span class="l">Investido (real, 100%)</span><span class="v">${brl(d.total)}</span></div>
+          <div class="row"><span class="l">VGV líquido projetado</span><span class="v">${brl(vgvProjetoLiquido)}</span></div>
+          <div class="row"><span class="l">Margem projetada (50% Camurim)</span><span class="v" style="color:${margemPorProjeto[p]>=0?'var(--good)':'var(--bad)'}">${brl(margemPorProjeto[p]*JV_SPLIT_ARCA)}</span></div>
+          <div class="bar"><i style="width:${Math.min(100,consumido*100)}%"></i></div>
+        </div>`;
+      }).join('') : ''}
+      ${empCarregado ? PROJETOS_CAMURIM_LAND.map(p=>{
+        const d = porProjeto[p];
+        return `<div class="proj-card">
+          <div class="name">${cap(p)}</div>
+          <span class="chip chip-terreno">Real — terreno, 100% Camurim, sem JV ainda</span>
+          <div class="row"><span class="l">Investido</span><span class="v">${brl(d.total)}</span></div>
+          <div class="row"><span class="l">VGV / margem</span><span class="v" style="color:#9aa4b2;">sem projeto formal</span></div>
+          <div class="bar"><i style="width:100%;background:#C9B183;"></i></div>
+        </div>`;
+      }).join('') : ''}
+    </div>
+    <div class="notes">
+      <h3>Terrenos & integralização na JV</h3>
+      <ul>
+        ${ev.map(e=>`<li>${cap(e.ativo)}: Camurim comprou por <b>${brl(e.valorCusto)}</b>, integralizado na JV por <b>${brl(e.valorIntegralizacao)}</b> (+${brl(e.valorIntegralizacao-e.valorCusto)}).</li>`).join('')}
+        <li>Para Morada Bela I, o aporte de cada empresa segue sendo uma estimativa (50% do custo do projeto, <b>${brl(E.aporteCamurimMB1Estimado||0)}</b> por lado). O extrato bancário tem um valor "real" por Pix recebido, mas não usamos como aporte confirmado — parte do aporte da Arca costuma rotear pela conta da Camurim antes de chegar na JV, então não dá pra distinguir com certeza de quem é o dinheiro só pelo nome de quem mandou o Pix (ver nota acima, no card de aportes).</li>
+      </ul>
+    </div>
+    <div class="table-card"><h3>Lançamentos — Duas Primeiras Casas</h3><div id="dc-gridTable"></div></div>
+    ${empCarregado ? `<div class="table-card"><h3>Lançamentos — JV + Lotes Camurim</h3><div id="emp-gridTable"></div></div>` : ''}
+  `;
+
+  const apjvOrder = Object.keys(apjvMB2.porEmpresa).sort((a,b)=>apjvMB2.porEmpresa[b]-apjvMB2.porEmpresa[a]);
+  new Chart(document.getElementById('emp-chartAportesJV'), { type:'bar',
+    data:{ labels: apjvOrder.map(cap), datasets:[{ data: apjvOrder.map(k=>apjvMB2.porEmpresa[k]), backgroundColor: apjvOrder.map(k=>k===apjvLider?'#16352a':'#C9B183'), borderRadius:2, barPercentage:0.5 }] },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{ beginAtZero:true, grid:baseGrid, ticks:{ callback:v=>brlK(v), font:baseFont } }, y:{ grid:baseGrid, ticks:{ font:{size:12,weight:'700',family:'Calibri, sans-serif'} } } } } });
+
+  if(empCarregado){
+    new Chart(document.getElementById('emp-chartCustoJV'), { type:'bar',
+      data:{ labels: posOrderJV.map(cap), datasets:[{ data: posOrderJV.map(p=>porProjeto[p].total), backgroundColor: posOrderJV.map(p=>p===posOrderJV[0]?'#16352a':'#C9B183'), borderRadius:2, barPercentage:0.5 }] },
+      options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+        scales:{ x:{ beginAtZero:true, grid:baseGrid, ticks:{ callback:v=>brlK(v), font:baseFont } }, y:{ grid:baseGrid, ticks:{ font:{size:12,weight:'700',family:'Calibri, sans-serif'} } } } } });
+
+    new gridjs.Grid({
+      columns: ["Data","Empreendimento","Descrição","Categoria","Conta","Valor"],
+      data: rows.slice().sort((a,b)=>b.date-a.date).map(r=>[ r.dataStr, cap(r.projeto), r.descricao, cap(r.aplicacao), r.conta, brl(r.valor) ]),
+      sort:true, search:true, pagination:{limit:15}
+    }).render(document.getElementById('emp-gridTable'));
+  }
+
+  new gridjs.Grid({
+    columns: ["Data","Fornecedor","Categoria","Item","Valor"],
+    data: dc.custoRows.slice().sort((a,b)=>b.date-a.date).map(r=>[ r.dataStr, r.fornecedor, cap(r.categoria), r.item, brl(r.valor) ]),
+    sort:true, search:true, pagination:{limit:15}
+  }).render(document.getElementById('dc-gridTable'));
+}
+
+/* ===================== TAB: INSIGHTS ===================== */
+// Waterfall de caixa da Camurim: aporte dos socios, menos/mais o que ja foi realizado (Duas Casas),
+// menos o land bank (3 lotes parados), menos o que a Camurim colocou na JV (MB real+estimado, MB II real via aportes_jv.csv).
+// Nao usa a soma bruta de "conta=CAM" (isso mistura quem pagou operacionalmente com o que e de fato aporte de capital).
+// Compartilhado entre a aba Insights e a aba Projecao (mesmo saldo inicial nas duas).
+function computeColchaoCaixa(csRowsRaw, dc, E, apjv, empCarregado){
+  const totalAportado = csRowsPagas(csRowsRaw).reduce((s,r)=>s+r.valor,0);
+  const vendaLiquidaDC = dc.vgv - dc.despesasVenda;
+  // Nota 26/07/2026: o extrato bancario tem dados de Morada Bela I tambem, mas NAO usamos aqui - o extrato so mostra
+  // o nome de quem enviou o Pix, e o padrao conhecido dessa JV e que parte do aporte da Arca roteia pela conta da
+  // Camurim antes de chegar na conta da JV (ver README). Por isso mantemos so o dado 100% confiavel (Morada Bela II,
+  // aporte-a-aporte em aportes_jv.csv) + estimativa para Morada Bela I, ate confirmar com a Arca.
+  const apjvMB2Rows = (apjv.rows||[]).filter(r=>r.projeto==='MORADA BELA II');
+  const apjvMB2 = computeAportesJV(apjvMB2Rows);
+  const aporteJvCamurim = empCarregado ? (E.aporteCamurimMB1Estimado + (apjvMB2.porEmpresa.CAMURIM||0)) : 0;
+  const passos = [
+    { label:'Aporte Capital Social (sócios)', valor: totalAportado },
+    { label:'Custo de construção — Duas Casas', valor: -dc.totalCusto },
+    { label:'Venda das Duas Casas (líquida, realizado)', valor: vendaLiquidaDC },
+    { label:'Terrenos land bank (3 lotes, a custo)', valor: -E.custoLotesCamurim },
+  ];
+  if(empCarregado) passos.push({ label:'Aporte da Camurim na JV (Morada Bela + Morada Bela II)', valor: -aporteJvCamurim });
+  const total = passos.reduce((s,p)=>s+p.valor,0);
+  return { passos, total, totalAportado, aporteJvCamurim };
+}
+
+function renderInsightsTab(csRows, empRows, dc, ev, empErr, apjv){
+  const el = document.getElementById('tab-insights');
+  const empCarregado = !!empRows;
+  const E = computeEmpreendimentos(empRows || []);
+
+  const colchao = computeColchaoCaixa(csRows, dc, E, apjv, empCarregado);
+  const passos = colchao.passos;
+  const colchaoCaixa = colchao.total;
+
+  const margens = [{ p:'DUAS PRIMEIRAS CASAS', pctMargem: dc.margem/dc.vgv }, ...(empCarregado?PROJETOS_JV.map(p=>({ p, pctMargem: E.margemPorProjeto[p]/E.vgvProjetoLiquido })):[])];
+  margens.sort((a,b)=>a.pctMargem-b.pctMargem);
+  const piorMargem = margens[0];
+  const capitalParado = empCarregado ? LOTES_PARADOS.reduce((s,p)=>s+(E.porProjeto[p].total||0),0) : 0;
+  const valorizacao = ev.length ? ev.reduce((s,e)=>s+(e.valorIntegralizacao-e.valorCusto),0) : 0;
+
+  const insightCaixa = colchaoCaixa >= 0
+    ? `Depois de tudo — construção e venda das Duas Casas, terrenos e aporte na JV — sobra um colchão de <b class="good">${brl(colchaoCaixa)}</b> do capital que os sócios aportaram.`
+    : `O capital aportado pelos sócios já foi todo consumido — déficit de <b class="bad">${brl(Math.abs(colchaoCaixa))}</b> depois de construção, terrenos e aporte na JV.`;
+  const insightMargem = `<b>${cap(piorMargem.p)}</b> é o "bleeder" do portfólio: margem de <b class="${piorMargem.pctMargem>=0?'good':'bad'}">${pct(piorMargem.pctMargem)}</b> do VGV${piorMargem.p==='DUAS PRIMEIRAS CASAS'?' (real, já fechado)':' (projeção)'}.`;
+  const insightTerrenos = empCarregado
+    ? `<b>${brl(capitalParado)}</b> parados em terrenos (${LOTES_PARADOS.map(cap).join(', ')}), 100% Camurim, sem cronograma de obra nem entrada na JV.`
+    : `Aguardando dados para calcular capital parado em terrenos.`;
+
+  el.innerHTML = `
+    <div class="kpi-grid">
+      <div class="kpi-card ${colchaoCaixa>=0?'accent':'warn'}"><div class="label">Colchão de Caixa</div><div class="value" style="color:${colchaoCaixa>=0?'var(--good)':'var(--bad)'}">${brl(colchaoCaixa)}</div><div class="foot">aporte dos sócios após tudo já deployado</div></div>
+      <div class="kpi-card"><div class="label">Margem mais apertada</div><div class="value" style="color:${piorMargem.pctMargem>=0?'var(--good)':'var(--bad)'}">${pct(piorMargem.pctMargem)}</div><div class="foot">${cap(piorMargem.p)}</div></div>
+      <div class="kpi-card warn"><div class="label">Capital Parado em Terrenos</div><div class="value">${brl(capitalParado)}</div><div class="foot">3 lotes sem obra, 100% Camurim</div></div>
+      ${ev.length ? `<div class="kpi-card"><div class="label">Valorização na Integralização</div><div class="value" style="color:var(--good)">${brl(valorizacao)}</div><div class="foot">terrenos JV, acima do custo Camurim</div></div>` : ''}
+    </div>
+    <div class="slide">
+      <div class="kicker">Waterfall de caixa — de onde saiu, pra onde foi</div>
+      <p class="insight">${insightCaixa}</p>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:6px;">
+        ${passos.map(p=>`<tr style="border-top:1px solid var(--line);"><td style="padding:7px 4px;color:var(--muted);">${p.label}</td><td style="padding:7px 4px;text-align:right;font-weight:700;color:${p.valor>=0?'var(--good)':'var(--bad)'};">${p.valor>=0?'+':''}${brl(p.valor)}</td></tr>`).join('')}
+        <tr style="border-top:2px solid var(--pos-dark);"><td style="padding:8px 4px;font-weight:700;">Colchão de caixa hoje</td><td style="padding:8px 4px;text-align:right;font-weight:700;color:${colchaoCaixa>=0?'var(--good)':'var(--bad)'};">${brl(colchaoCaixa)}</td></tr>
+      </table>
+      ${empCarregado ? `<p style="font-size:11.5px;color:#9aa4b2;margin-top:8px;">Aporte da Camurim na JV: ${brl(colchao.aporteJvCamurim)} — real (Morada Bela II, aporte-a-aporte) + ${brl(E.aporteCamurimMB1Estimado)} estimado (Morada Bela I, 50% do custo — o extrato bancário tem um valor observado, mas não confirmado como aporte real de cada empresa; ver aba Empreendimentos).</p>` : ''}
+    </div>
+    <div class="slide"><div class="kicker">Margem por projeto — bleeders &amp; leaders</div><p class="insight">${insightMargem}</p><div class="chart-wrap"><canvas id="ins-chartMargem"></canvas></div></div>
+    <div class="slide"><div class="kicker">Capital ocioso em terrenos</div><p class="insight">${insightTerrenos}</p></div>
+  `;
+
+  new Chart(document.getElementById('ins-chartMargem'), { type:'bar',
+    data:{ labels: margens.map(m=>cap(m.p)), datasets:[{ data: margens.map(m=>m.pctMargem*100), backgroundColor: margens.map(m=>m.pctMargem>=0?'#2F6B49':'#B3432B'), borderRadius:2, barPercentage:0.55 }] },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{ grid:baseGrid, ticks:{ callback:v=>v+'%', font:baseFont } }, y:{ grid:baseGrid, ticks:{ font:{size:12,weight:'700',family:'Calibri, sans-serif'} } } } } });
+}
+
+/* ===================== TAB: ATAS ===================== */
+function renderAtasTab(rows){
+  const el = document.getElementById('tab-atas');
+  const hoje = new Date();
+  rows.forEach(r=>{ r.atrasado = r.status !== 'RESOLVIDO' && r.prazoDate && r.prazoDate < hoje; });
+  const total = rows.length;
+  const resolvidos = rows.filter(r=>r.status==='RESOLVIDO');
+  const abertos = rows.filter(r=>r.status!=='RESOLVIDO');
+  const atrasados = rows.filter(r=>r.atrasado);
+  const temposResolucao = resolvidos.filter(r=>r.dataReuniaoDate && r.dataResolucaoDate).map(r=>Math.round((r.dataResolucaoDate-r.dataReuniaoDate)/86400000));
+  const tempoMedio = temposResolucao.length ? (temposResolucao.reduce((s,v)=>s+v,0)/temposResolucao.length) : null;
+  const porResponsavel = {};
+  rows.forEach(r=>{ const k = cap(r.responsavel)||'Sem responsável'; porResponsavel[k]=(porResponsavel[k]||0)+1; });
+  const respOrder = Object.keys(porResponsavel).sort((a,b)=>porResponsavel[b]-porResponsavel[a]);
+
+  const insight1 = total<=1
+    ? `Ainda há só a linha de exemplo na planilha. Assim que vocês registrarem a primeira reunião real, esse painel passa a refletir tudo automaticamente.`
+    : `<b>${abertos.length}</b> tema(s) em aberto de <b>${total}</b>, <b class="${atrasados.length?'bad':'good'}">${atrasados.length}</b> com prazo vencido${tempoMedio!==null?`. Tempo médio de resolução: <b>${tempoMedio.toFixed(1)} dias</b>.`:'.'}`;
+
+  el.innerHTML = `
+    ${total<=1 ? `<div class="note">Esta planilha foi criada com uma linha de exemplo. O painel atualiza sozinho assim que vocês registrarem reuniões reais.</div>` : ''}
+    <div class="kpi-grid">
+      <div class="kpi-card accent"><div class="label">Temas Registrados</div><div class="value">${total}</div></div>
+      <div class="kpi-card"><div class="label">Em Aberto</div><div class="value">${abertos.length}</div></div>
+      <div class="kpi-card warn"><div class="label">Atrasados</div><div class="value" style="color:${atrasados.length?'var(--bad)':'var(--ink)'}">${atrasados.length}</div></div>
+      <div class="kpi-card"><div class="label">Resolvidos</div><div class="value">${resolvidos.length}</div><div class="foot">${total?Math.round(resolvidos.length/total*100):0}% do total</div></div>
+      <div class="kpi-card"><div class="label">Tempo Médio de Resolução</div><div class="value">${tempoMedio!==null?tempoMedio.toFixed(1)+' dias':'—'}</div></div>
+    </div>
+    <div class="slide"><div class="kicker">Pendências por responsável</div><p class="insight">${insight1}</p><div class="chart-wrap"><canvas id="atas-chartResp"></canvas></div></div>
+    <div class="table-card"><h3>Todos os temas</h3><div id="atas-gridTable"></div></div>
+  `;
+  new Chart(document.getElementById('atas-chartResp'), { type:'bar',
+    data:{ labels: respOrder, datasets:[{ data: respOrder.map(r=>porResponsavel[r]), backgroundColor: respOrder.map((_,i)=>i===0?'#16352a':'#C9B183'), borderRadius:2, barPercentage:0.5 }] },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{ beginAtZero:true, grid:baseGrid, ticks:{ stepSize:1, font:baseFont } }, y:{ grid:baseGrid, ticks:{ font:{size:12,weight:'700',family:'Calibri, sans-serif'} } } } } });
+  new gridjs.Grid({
+    columns: ["Reunião","Tema","Responsável","Prazo","Status","Resolvido em","Observações"],
+    data: rows.slice().sort((a,b)=>(b.dataReuniaoDate||0)-(a.dataReuniaoDate||0)).map(r=>[ r.dataReuniao, r.tema, cap(r.responsavel), r.prazo||'—', r.atrasado?'Atrasado':cap((r.status||'').replace('_',' ')), r.dataResolucao||'—', r.observacoes||'' ]),
+    sort:true, search:true, pagination:{limit:15}
+  }).render(document.getElementById('atas-gridTable'));
+}
+
+/* ===================== TAB: ROI vs IPCA+6% ===================== */
+function renderRoiTab(csRows, empRows, dc){
+  const el = document.getElementById('tab-roi');
+  const empCarregado = !!empRows;
+  const E = computeEmpreendimentos(empRows || []);
+  const margemCamurimIsolada = dc.margem + (empCarregado ? E.margemCamurimEmJV : 0);
+  const R = computeROI(csRows, margemCamurimIsolada);
+  const superou = R.diferenca >= 0;
+  const [yF,mF] = R.mkFinal.split('-').map(Number);
+  const dataFinalFmt = new Date(yF, mF-1, 1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+
+  const insight1 = `Os sócios aportaram <b>${brl(R.totalAportado)}</b> na Camurim. Se esse mesmo dinheiro, em cada data de aporte, tivesse sido investido a <b>IPCA + ${pct(RETORNO_EXTRA_ANUAL)} ao ano</b> (uma referência de baixo risco), valeria hoje <b>${brl(R.valorHipoteticoIPCA6)}</b> — um rendimento de <b>${brl(R.rendimentoIPCA6)}</b>. O negócio real (Duas Casas fechada + 50% do resultado projetado da JV${empCarregado?'':' — JV ainda carregando'}) vale hoje <b>${brl(R.valorAtualNegocio)}</b>.`;
+  const insight2 = superou
+    ? `O negócio está <b class="good">superando</b> a referência de baixo risco em <b class="good">${brl(R.diferenca)}</b> até agora — sinal de que vale a pena seguir com o investimento imobiliário em vez de uma aplicação segura.`
+    : `O negócio está <b class="bad">abaixo</b> da referência de baixo risco em <b class="bad">${brl(Math.abs(R.diferenca))}</b> até agora — vale reavaliar se o retorno projetado da JV compensa o risco, já que boa parte da margem ainda é projeção (unidades não vendidas).`;
+
+  el.innerHTML = `
+    <div class="exec-highlight">
+      <div class="label">Negócio × IPCA + ${pct(RETORNO_EXTRA_ANUAL)} ao ano (referência de baixo risco)</div>
+      <p>${insight1} ${insight2}</p>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card accent"><div class="label">Total Aportado (sócios)</div><div class="value">${brl(R.totalAportado)}</div><div class="foot">Capital Social — base da comparação</div></div>
+      <div class="kpi-card"><div class="label">Valor hoje se fosse IPCA+${pct(RETORNO_EXTRA_ANUAL)}</div><div class="value">${brl(R.valorHipoteticoIPCA6)}</div><div class="foot">até ${dataFinalFmt}</div></div>
+      <div class="kpi-card"><div class="label">Valor hoje no negócio real</div><div class="value">${brl(R.valorAtualNegocio)}</div><div class="foot">aportado + resultado Camurim isolada</div></div>
+      <div class="kpi-card"><div class="label">Diferença</div><div class="value" style="color:${superou?'var(--good)':'var(--bad)'}">${brl(R.diferenca)}</div><div class="foot">${superou?'negócio à frente':'benchmark à frente'}</div></div>
+    </div>
+    <div class="slide">
+      <div class="kicker">Capital aportado × valor equivalente em IPCA+${pct(RETORNO_EXTRA_ANUAL)}, ao longo do tempo</div>
+      <p class="insight">Cada linha mostra o acumulado até aquele mês: quanto os sócios já haviam aportado (nominal) vs. quanto esse mesmo capital valeria se tivesse sido investido a IPCA+${pct(RETORNO_EXTRA_ANUAL)} desde a data de cada aporte. A marca final no fim da linha azul mostra onde está o resultado real do negócio hoje.</p>
+      <div class="chart-wrap tall"><canvas id="roi-chartTempo"></canvas></div>
+    </div>
+    <div class="notes">
+      <h3>Metodologia & limitações</h3>
+      <ul>
+        <li>Base de aporte: <b>capital_social.csv</b> (dinheiro que os sócios investidores puseram na Camurim). O "resultado do negócio" usado na comparação é a visão <b>Camurim isolada</b> (Duas Casas 100% + 50% do resultado projetado de Morada Bela/Morada Bela II) — não o resultado consolidado da JV inteira, já que o capital comparado é só o dos sócios da Camurim.</li>
+        <li>IPCA de out/2025 a jun/2026 é dado oficial do IBGE. De dez/2024 a set/2025, a divulgação mês a mês não foi encontrada nas fontes disponíveis — foi usada uma estimativa distribuída igualmente (~0,40%/mês) a partir do fechamento oficial do ano de 2025 (4,26%). Ainda não há IPCA de julho/2026 publicado.</li>
+        <li>Boa parte do "resultado do negócio" ainda é <b>projeção</b> (margem esperada de Morada Bela/Morada Bela II, unidades ainda não vendidas) — não um ganho realizado como o do IPCA+6%, que é um cálculo direto.</li>
+        <li>Cada aporte passa a "render" a partir do mês em que caiu (granularidade mensal, não diária).</li>
+        <li>Os KPIs acima ("Total Aportado", "Valor hoje...") já incluem os aportes de julho/2026, mesmo sem o IPCA do mês ainda publicado (tratados como sem rendimento ainda). O gráfico mensal para no fechamento de junho/2026 — por isso o último ponto da linha "Capital aportado" é um pouco menor que o total dos KPIs.</li>
+      </ul>
+    </div>
+  `;
+
+  const labels = R.serieMensal.map(s => monthLabel(s.mk));
+  new Chart(document.getElementById('roi-chartTempo'), { type:'line',
+    data:{ labels, datasets:[
+      { label:'Capital aportado (nominal)', data: R.serieMensal.map(s=>s.cumAportado), borderColor:'#C9B183', borderWidth:2, pointRadius:0, tension:0.1, fill:false },
+      { label:`IPCA+${pct(RETORNO_EXTRA_ANUAL)}`, data: R.serieMensal.map(s=>s.cumBenchmark), borderColor:'#16352a', borderWidth:2.5, pointRadius:0, tension:0.1, fill:false },
+    ] },
+    options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{right:90}}, plugins:{legend:{display:true, position:'top', labels:{font:baseFont}}},
+      scales:{ x:{ ticks:{maxTicksLimit:12,font:baseFont}, grid:baseGrid }, y:{ beginAtZero:true, ticks:{ callback:v=>brlK(v), font:baseFont }, grid:{color:'#f0f2ec'} } } } });
+}
+
+/* ===================== TAB: PROJEÇÃO — 3 LOTES (JV vs. Camurim sozinha) ===================== */
+// Perfil real de desembolso mensal de Morada Bela + Morada Bela II: mes 1 = 1a despesa do projeto,
+// ultimo mes = ultima despesa (premissa do usuario). Os dois projetos sao somados (alinhados pelo
+// mes-a-partir-do-inicio de cada um) e normalizados, gerando um "molde" de curva de obra pra aplicar
+// nos 3 lotes que ainda faltam construir.
+function computeConstructionProfile(empRows){
+  const porProjeto = {};
+  PROJETOS_JV.forEach(p=>{
+    const rows = (empRows||[]).filter(r=>r.projeto===p);
+    if(!rows.length){ porProjeto[p] = []; return; }
+    const dmin = new Date(Math.min(...rows.map(r=>r.date.getTime())));
+    const porMes = {};
+    rows.forEach(r=>{
+      const mi = (r.date.getFullYear()-dmin.getFullYear())*12 + (r.date.getMonth()-dmin.getMonth());
+      porMes[mi] = (porMes[mi]||0) + r.valor;
+    });
+    const maxMi = Math.max(...Object.keys(porMes).map(Number));
+    const arr = []; for(let i=0;i<=maxMi;i++) arr.push(porMes[i]||0);
+    porProjeto[p] = arr;
+  });
+  const maxLen = Math.max(1, ...Object.values(porProjeto).map(a=>a.length));
+  const somaAbs = new Array(maxLen).fill(0);
+  Object.values(porProjeto).forEach(arr=>arr.forEach((v,i)=>{ somaAbs[i]+=v; }));
+  const total = somaAbs.reduce((s,v)=>s+v,0);
+  const pctArr = total ? somaAbs.map(v=>v/total) : [1];
+  // "mes de entrega pratica": primeiro mes em que o desembolso acumulado passa de 97% (o resto e cauda administrativa).
+  let cum=0, mesEntregaIdx=pctArr.length-1;
+  for(let i=0;i<pctArr.length;i++){ cum+=pctArr[i]; if(cum>=0.97){ mesEntregaIdx=i; break; } }
+  return { pctArr, mesEntregaIdx, duracaoMeses: pctArr.length, porProjeto };
+}
+
+const MESES_VENDA_PROJECAO = 3; // premissa do usuario: os 8 apartamentos atuais (e as novas unidades) vendidos em 3 meses apos prontos
+const NUM_LOTES_NOVOS = PROJETOS_CAMURIM_LAND.length; // 3 lotes ainda sem projeto formal
+
+// Simula o fluxo de caixa mensal de um cenario dado um mes de inicio (offset, 0 = comeca ja) pra cada
+// um dos 3 lotes. offsets=[0,0,0] = as 3 obras comecam juntas (simultaneo); offsets=[0,delta,2*delta]
+// (delta = mes de entrega pratica) = so inicia o proximo lote quando o anterior esta pronto pra vender
+// (faseado). Qualquer combinacao de offsets pode ser simulada (usado pelo simulador interativo).
+function simulateTimeline(camurimCashPorLote, camurimVgvPorLote, profile, existenteInflowPorMes, colchaoInicial, offsets){
+  const inflowPorMesVendaLote = camurimVgvPorLote / MESES_VENDA_PROJECAO;
+  const ultimoInicio = Math.max(...offsets);
+  const nMeses = Math.max(
+    profile.duracaoMeses,
+    MESES_VENDA_PROJECAO,
+    ultimoInicio + Math.max(profile.duracaoMeses, profile.mesEntregaIdx + 1 + MESES_VENDA_PROJECAO)
+  );
+  const obraOutArr = new Array(nMeses).fill(0);
+  const novoInArr = new Array(nMeses).fill(0);
+  offsets.forEach(off=>{
+    for(let i=0;i<profile.duracaoMeses;i++){
+      const mi = off + i;
+      if(mi < nMeses) obraOutArr[mi] -= camurimCashPorLote * (profile.pctArr[i]||0);
+    }
+    const saleStart = off + profile.mesEntregaIdx + 1;
+    for(let j=0;j<MESES_VENDA_PROJECAO;j++){
+      const mi = saleStart + j;
+      if(mi < nMeses) novoInArr[mi] += inflowPorMesVendaLote;
+    }
+  });
+  const meses = [];
+  let saldo = colchaoInicial;
+  for(let i=0;i<nMeses;i++){
+    const existenteIn = i < MESES_VENDA_PROJECAO ? existenteInflowPorMes : 0;
+    const obraOut = obraOutArr[i];
+    const novoIn = novoInArr[i];
+    const net = existenteIn + obraOut + novoIn;
+    saldo += net;
+    meses.push({ existenteIn, obraOut, novoIn, net, saldo });
+  }
+  const saldoMinimo = Math.min(colchaoInicial, ...meses.map(m=>m.saldo));
+  const saldoFinal = meses.length ? meses[meses.length-1].saldo : colchaoInicial;
+  return { meses, nMeses, saldoMinimo, saldoFinal, offsets };
+}
+
+function computeProjecao(csRows, empRows, dc, ev, apjv){
+  const empCarregado = !!empRows;
+  const E = computeEmpreendimentos(empRows || []);
+  const colchao = computeColchaoCaixa(csRows, dc, E, apjv, empCarregado);
+  const profile = computeConstructionProfile(empRows || []);
+
+  const terrenoValor = ev.length ? ev.reduce((s,e)=>s+e.valorIntegralizacao,0)/ev.length : 70000;
+  const custoConstrucaoMB = (E.porProjeto['MORADA BELA']?.total||0) - terrenoValor;
+  const custoConstrucaoMB2 = (E.porProjeto['MORADA BELA II']?.total||0) - terrenoValor;
+  const custoConstrucaoPorLote = (custoConstrucaoMB + custoConstrucaoMB2) / 2;
+
+  const cenarios = {
+    jv: {
+      key:'jv', nome:'Seguir com a JV', subtitulo:'Integraliza os 3 terrenos a valor de mercado, Arca completa o resto pro 50/50',
+      custoTotalPorLote: custoConstrucaoPorLote + terrenoValor,
+      camurimCashPorLote: (custoConstrucaoPorLote + terrenoValor)/2 - terrenoValor,
+      camurimVgvPorLote: E.vgvProjetoLiquido * (1 - JV_SPLIT_ARCA),
+      cor:'#16352a',
+    },
+    sozinha: {
+      key:'sozinha', nome:'Camurim sozinha', subtitulo:'Constrói nos 3 lotes já pagos, sem JV — desembolso só de construção',
+      custoTotalPorLote: custoConstrucaoPorLote,
+      camurimCashPorLote: custoConstrucaoPorLote,
+      camurimVgvPorLote: E.vgvProjetoLiquido,
+      cor:'#C9B183',
+    },
+  };
+
+  const existenteInflowPorMes = E.ativoProjecaoCamurim / MESES_VENDA_PROJECAO; // venda dos 8 apartamentos atuais (50% Camurim), meses 1-3, igual em tudo
+
+  Object.values(cenarios).forEach(c=>{
+    const cashOutTotal = c.camurimCashPorLote * NUM_LOTES_NOVOS;
+    const vgvInTotal = c.camurimVgvPorLote * NUM_LOTES_NOVOS;
+    c.cashOutTotal = cashOutTotal;
+    c.vgvInTotal = vgvInTotal;
+    c.lucroLiquidoNovo = vgvInTotal - cashOutTotal; // mesmo total nos dois modos - so muda o timing
+    c.roiNovoCapital = cashOutTotal ? c.lucroLiquidoNovo / cashOutTotal : 0;
+    c.simultaneo = simulateTimeline(c.camurimCashPorLote, c.camurimVgvPorLote, profile, existenteInflowPorMes, colchao.total, [0,0,0]);
+    c.faseado = simulateTimeline(c.camurimCashPorLote, c.camurimVgvPorLote, profile, existenteInflowPorMes, colchao.total, [0, profile.mesEntregaIdx+1, 2*(profile.mesEntregaIdx+1)]);
+    // mantem compat com quem usa c.meses/c.saldoMinimo diretamente (modo simultaneo, ja existente)
+    c.meses = c.simultaneo.meses;
+    c.saldoMinimo = c.simultaneo.saldoMinimo;
+    c.saldoFinal = c.simultaneo.saldoFinal;
+  });
+
+  const nMesesMax = Math.max(...Object.values(cenarios).map(c=>Math.max(c.simultaneo.nMeses, c.faseado.nMeses)));
+  const hoje = new Date();
+  const labelsAll = [];
+  for(let i=0;i<nMesesMax;i++){
+    const d = new Date(hoje.getFullYear(), hoje.getMonth()+1+i, 1);
+    labelsAll.push(d.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'}));
+  }
+  const nMeses = Object.values(cenarios)[0].simultaneo.nMeses;
+  const labels = labelsAll.slice(0, nMeses);
+  const saleStartIdx = profile.mesEntregaIdx + 1;
+
+  return { empCarregado, E, colchao, profile, cenarios, labels, labelsAll, nMeses, nMesesMax, saleStartIdx, terrenoValor, custoConstrucaoPorLote, existenteInflowPorMes };
+}
+
+function renderProjecaoTab(csRows, empRows, dc, ev, apjv){
+  const el = document.getElementById('tab-projecao');
+  const P = computeProjecao(csRows, empRows, dc, ev, apjv);
+  const { cenarios, labels } = P;
+
+  if(!P.empCarregado){
+    el.innerHTML = `<div class="err">Empreendimentos ainda não carregaram — essa aba depende do custo real de Morada Bela e Morada Bela II pra montar a projeção.</div>`;
+    return;
+  }
+
+  const jv = cenarios.jv, so = cenarios.sozinha;
+  const melhorLucro = so.lucroLiquidoNovo > jv.lucroLiquidoNovo ? so : jv;
+  const melhorRoi = so.roiNovoCapital > jv.roiNovoCapital ? so : jv;
+
+  const insightTopo = `Nos 3 lotes que restam: <b>${so.nome}</b> rende <b class="good">${brl(so.lucroLiquidoNovo)}</b> de lucro (100% pra Camurim) contra <b class="good">${brl(jv.lucroLiquidoNovo)}</b> na JV (50%) — mas exige <b>${brl(so.cashOutTotal)}</b> de caixa novo, quase o triplo dos <b>${brl(jv.cashOutTotal)}</b> da JV.`;
+  const idxMinSo = so.meses.findIndex(m=>m.saldo===so.saldoMinimo);
+  const insightCaixa = so.saldoMinimo < 0
+    ? `Construindo os 3 lotes <b>ao mesmo tempo</b> (premissa abaixo), o caixa da Camurim sozinha fica <b class="bad">negativo</b> — chega a <b class="bad">${brl(so.saldoMinimo)}</b>${idxMinSo>=0?' por volta de '+labels[idxMinSo]:''}. Na JV, o caixa ${jv.saldoMinimo>=0?'não fica negativo em nenhum mês':'chega a ficar negativo, mas bem menos: '+brl(jv.saldoMinimo)}.`
+    : `Em nenhum dos dois cenários o caixa da Camurim fica negativo, considerando a venda dos 8 apartamentos atuais entrando nos primeiros 3 meses.`;
+
+  // Faseamento: so inicia o proximo lote quando o anterior estiver "pronto pra vender" (mes de entrega pratica do perfil real).
+  const jvF = jv.faseado, soF = so.faseado;
+  const resolveuNegativo = so.saldoMinimo < 0 && soF.saldoMinimo >= 0;
+  const melhorouMasAindaNegativo = so.saldoMinimo < 0 && soF.saldoMinimo < 0 && soF.saldoMinimo > so.saldoMinimo;
+  const idxMinSoF = soF.meses.findIndex(m=>m.saldo===soF.saldoMinimo);
+  const insightFaseamento = resolveuNegativo
+    ? `Faseando (só inicia o lote seguinte quando o anterior está pronto pra vender), o caixa da Camurim sozinha <b class="good">deixa de ficar negativo</b> — o intervalo entre construir e vender já é suficiente pra se proteger, sem precisar do modelo JV nem de aporte extra. Custo: o projeto todo demora <b>${soF.nMeses}</b> meses em vez de <b>${so.nMeses}</b>.`
+    : melhorouMasAindaNegativo
+    ? `Faseando, o pior momento de caixa da Camurim sozinha melhora de <b class="bad">${brl(so.saldoMinimo)}</b> para <b class="bad">${brl(soF.saldoMinimo)}</b>${idxMinSoF>=0?' (por volta de '+P.labelsAll[idxMinSoF]+')':''} — ainda fica no vermelho, então o tempo entre construir e vender sozinho <b>não é suficiente</b> pra proteger o caixa sem aporte extra. O projeto todo passa a demorar <b>${soF.nMeses}</b> meses em vez de <b>${so.nMeses}</b>.`
+    : `Faseando ou não, o resultado de caixa não muda de forma relevante nesse cenário.`;
+
+  el.innerHTML = `
+    <div class="exec-highlight">
+      <div class="label">3 lotes restantes — JV ou Camurim sozinha?</div>
+      <p>${insightTopo} ${insightCaixa}</p>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="label">Desembolso novo — JV</div><div class="value">${brl(jv.cashOutTotal)}</div><div class="foot">50% do custo (terreno já integralizado)</div></div>
+      <div class="kpi-card accent"><div class="label">Desembolso novo — Sozinha</div><div class="value">${brl(so.cashOutTotal)}</div><div class="foot">100% da construção (terreno já pago)</div></div>
+      <div class="kpi-card"><div class="label">Lucro líquido — JV</div><div class="value" style="color:${jv.lucroLiquidoNovo>=0?'var(--good)':'var(--bad)'}">${brl(jv.lucroLiquidoNovo)}</div><div class="foot">ROI sobre caixa novo: ${pct(jv.roiNovoCapital)}</div></div>
+      <div class="kpi-card accent"><div class="label">Lucro líquido — Sozinha</div><div class="value" style="color:${so.lucroLiquidoNovo>=0?'var(--good)':'var(--bad)'}">${brl(so.lucroLiquidoNovo)}</div><div class="foot">ROI sobre caixa novo: ${pct(so.roiNovoCapital)}</div></div>
+    </div>
+
+    <div class="slide">
+      <div class="kicker">Posição — desembolso × retorno, 3 lotes (12 unidades)</div>
+      <p class="insight">${cap(melhorRoi.nome)} tem o melhor retorno percentual (${pct(melhorRoi.roiNovoCapital)}); ${cap(melhorLucro.nome)} traz mais lucro em reais (${brl(melhorLucro.lucroLiquidoNovo)}).</p>
+      <div class="chart-wrap"><canvas id="proj-chartPosicao"></canvas></div>
+    </div>
+
+    <div class="slide">
+      <div class="kicker">Direção — saldo de caixa da Camurim, mês a mês (3 lotes simultâneos)</div>
+      <p class="insight">Parte do saldo hoje (${brl(P.colchao.total)}, mesmo ponto de partida da aba Insights), soma a venda dos 8 apartamentos atuais nos 3 primeiros meses, desconta a obra nova conforme o ritmo real de Morada Bela + Morada Bela II, e soma a venda das novas unidades ${MESES_VENDA_PROJECAO} meses depois de prontas. Os 3 lotes começam a obra juntos.</p>
+      <div class="chart-wrap tall"><canvas id="proj-chartCaixa"></canvas></div>
+    </div>
+
+    <div class="slide">
+      <div class="kicker">Simultâneo × faseado — o tempo entre construir e vender protege o caixa?</div>
+      <p class="insight">${insightFaseamento}</p>
+      <div class="chart-wrap tall"><canvas id="proj-chartFaseamento"></canvas></div>
+      <div style="margin-top:12px;">
+        <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+          <thead><tr style="text-align:right;"><th style="text-align:left;padding:6px 4px;color:var(--muted);">Cenário</th><th style="padding:6px 4px;color:var(--muted);">Pior momento de caixa</th><th style="padding:6px 4px;color:var(--muted);">Duração total</th></tr></thead>
+          <tbody>
+            <tr style="border-top:1px solid var(--line);"><td style="padding:6px 4px;">JV — simultâneo</td><td style="padding:6px 4px;text-align:right;color:${jv.simultaneo.saldoMinimo>=0?'var(--ink)':'var(--bad)'};">${brl(jv.simultaneo.saldoMinimo)}</td><td style="padding:6px 4px;text-align:right;">${jv.simultaneo.nMeses} meses</td></tr>
+            <tr style="border-top:1px solid var(--line);"><td style="padding:6px 4px;">JV — faseado</td><td style="padding:6px 4px;text-align:right;color:${jvF.saldoMinimo>=0?'var(--ink)':'var(--bad)'};">${brl(jvF.saldoMinimo)}</td><td style="padding:6px 4px;text-align:right;">${jvF.nMeses} meses</td></tr>
+            <tr style="border-top:1px solid var(--line);"><td style="padding:6px 4px;">Sozinha — simultâneo</td><td style="padding:6px 4px;text-align:right;color:${so.simultaneo.saldoMinimo>=0?'var(--ink)':'var(--bad)'};">${brl(so.simultaneo.saldoMinimo)}</td><td style="padding:6px 4px;text-align:right;">${so.simultaneo.nMeses} meses</td></tr>
+            <tr style="border-top:1px solid var(--line);"><td style="padding:6px 4px;">Sozinha — faseado</td><td style="padding:6px 4px;text-align:right;color:${soF.saldoMinimo>=0?'var(--ink)':'var(--bad)'};">${brl(soF.saldoMinimo)}</td><td style="padding:6px 4px;text-align:right;">${soF.nMeses} meses</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="slide">
+      <div class="kicker">Simulador — ajuste quando cada lote começa</div>
+      <p class="insight" id="proj-simInsight">—</p>
+      <div class="sim-controls">
+        <div>
+          <label>Lote 1 (16 QAH) — início: <span id="proj-simLabel0">mês 1</span></label>
+          <input type="range" id="proj-simSlider0" min="0" max="24" value="0" step="1">
+        </div>
+        <div>
+          <label>Lote 2 (27AX) — início: <span id="proj-simLabel1">mês 1</span></label>
+          <input type="range" id="proj-simSlider1" min="0" max="24" value="0" step="1">
+        </div>
+        <div>
+          <label>Lote 3 (32AX) — início: <span id="proj-simLabel2">mês 1</span></label>
+          <input type="range" id="proj-simSlider2" min="0" max="24" value="0" step="1">
+        </div>
+      </div>
+      <div class="sim-btn-row">
+        <button type="button" class="sim-btn" id="proj-simBtnSim">Simultâneo (0/0/0)</button>
+        <button type="button" class="sim-btn" id="proj-simBtnFas">Faseado (auto)</button>
+      </div>
+      <div class="kpi-grid" id="proj-simKpis"></div>
+      <div class="chart-wrap tall"><canvas id="proj-chartSimulador"></canvas></div>
+    </div>
+
+    <div class="table-card">
+      <h3>Fluxo de caixa mensal — saldo acumulado da Camurim (3 lotes simultâneos)</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+        <thead><tr style="text-align:right;"><th style="text-align:left;padding:6px 4px;color:var(--muted);">Mês</th><th style="padding:6px 4px;color:var(--muted);">Saldo — JV</th><th style="padding:6px 4px;color:var(--muted);">Saldo — Sozinha</th></tr></thead>
+        <tbody>
+          ${labels.map((lb,i)=>`<tr style="border-top:1px solid var(--line);"><td style="padding:6px 4px;">${lb}</td><td style="padding:6px 4px;text-align:right;color:${jv.meses[i].saldo>=0?'var(--ink)':'var(--bad)'};">${brl(jv.meses[i].saldo)}</td><td style="padding:6px 4px;text-align:right;color:${so.meses[i].saldo>=0?'var(--ink)':'var(--bad)'};">${brl(so.meses[i].saldo)}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="notes">
+      <h3>Premissas desta projeção</h3>
+      <ul>
+        <li>Custo de construção por lote (sem terreno): <b>${brl(P.custoConstrucaoPorLote)}</b> — média do que já foi gasto em Morada Bela + Morada Bela II, excluindo o valor do terreno (${brl(P.terrenoValor)} por projeto, mesmo valor de integralização já usado nos dois).</li>
+        <li>Ritmo de obra: perfil real de desembolso mês a mês de Morada Bela + Morada Bela II combinados (mês 1 = primeira despesa de cada projeto, conforme sua definição) — ${P.profile.duracaoMeses} meses de histórico, com ~97% do custo concentrado até o mês ${P.profile.mesEntregaIdx+1}, tratado aqui como "pronto pra vender".</li>
+        <li>Venda das novas unidades: ${MESES_VENDA_PROJECAO} meses após "pronto", mesma premissa que você deu para os 8 apartamentos atuais.</li>
+        <li>Mesmo modelo de unidade: 4 apartamentos por lote, ${brl(VALOR_VENDA_UNIDADE)} cada, líquido de ${pct(CUSTO_VENDA_PCT_BENCHMARK)} de despesa de venda (mesmo benchmark usado no resto do painel).</li>
+        <li>Saldo de caixa inicial: o mesmo "Colchão de Caixa" da aba Insights (${brl(P.colchao.total)}) — parte daqui, sem contar nenhum aporte novo dos sócios.</li>
+        <li><b>Atualizado em 05/09/2026:</b> ${P.E.unidadesVendidasTotal} das 8 unidades atuais (Morada Bela + Morada Bela II) já foram vendidas de verdade — essa projeção ainda soma o valor das 8 de uma vez nos primeiros 3 meses (simplificação), então o momento exato de entrada de caixa das unidades já vendidas pode estar um pouco diferente do real. O valor total usado (${brl(P.E.ativoProjecaoCamurim)}) já é o correto — real das vendidas + projeção das ${8-P.E.unidadesVendidasTotal} restantes.</li>
+        <li>No cenário JV, o terreno integralizado (${brl(P.terrenoValor)}/lote) conta como parte do aporte da Camurim — por isso o desembolso em dinheiro da Camurim é menor que 50% do custo total.</li>
+        <li>No modo <b>faseado</b>, cada lote só começa quando o anterior chega ao "mês de entrega prática" (mês ${P.profile.mesEntregaIdx+1} do perfil de obra) — por isso o projeto todo demora mais, mas o pico de desembolso mensal cai (só um lote em obra pesada por vez).</li>
+      </ul>
+    </div>
+  `;
+
+  new Chart(document.getElementById('proj-chartPosicao'), { type:'bar',
+    data:{ labels:['Desembolso (caixa novo)','Receita (Camurim)','Lucro líquido'],
+      datasets:[
+        { label:'JV', data:[jv.cashOutTotal, jv.vgvInTotal, jv.lucroLiquidoNovo], backgroundColor:'#16352a', borderRadius:2 },
+        { label:'Sozinha', data:[so.cashOutTotal, so.vgvInTotal, so.lucroLiquidoNovo], backgroundColor:'#C9B183', borderRadius:2 },
+      ] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:true, position:'top', labels:{font:baseFont}}},
+      scales:{ x:{ grid:baseGrid, ticks:{font:baseFont} }, y:{ beginAtZero:true, grid:{color:'#f0f2ec'}, ticks:{ callback:v=>brlK(v), font:baseFont } } } } });
+
+  new Chart(document.getElementById('proj-chartCaixa'), { type:'line',
+    data:{ labels, datasets:[
+      { label:'JV', data: jv.meses.map(m=>m.saldo), borderColor:'#16352a', borderWidth:2.5, pointRadius:0, tension:0.15, fill:false },
+      { label:'Sozinha', data: so.meses.map(m=>m.saldo), borderColor:'#C9B183', borderWidth:2.5, pointRadius:0, tension:0.15, fill:false },
+    ] },
+    options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{right:90}}, plugins:{legend:{display:true, position:'top', labels:{font:baseFont}}},
+      scales:{ x:{ ticks:{font:baseFont}, grid:baseGrid }, y:{ ticks:{ callback:v=>brlK(v), font:baseFont }, grid:{color:'#f0f2ec'} } } } });
+
+  // Estende o saldo (flat) apos o fim de cada timeline, pra todas as 4 series terem o mesmo eixo X (labelsAll).
+  function extendSaldo(meses, len){
+    const arr = meses.map(m=>m.saldo);
+    const last = arr.length ? arr[arr.length-1] : 0;
+    while(arr.length < len) arr.push(last);
+    return arr.slice(0, len);
+  }
+  new Chart(document.getElementById('proj-chartFaseamento'), { type:'line',
+    data:{ labels: P.labelsAll, datasets:[
+      { label:'JV — simultâneo', data: extendSaldo(jv.simultaneo.meses, P.nMesesMax), borderColor:'#16352a', borderWidth:2, pointRadius:0, tension:0.15, fill:false },
+      { label:'JV — faseado', data: extendSaldo(jvF.meses, P.nMesesMax), borderColor:'#16352a', borderWidth:2, borderDash:[5,4], pointRadius:0, tension:0.15, fill:false },
+      { label:'Sozinha — simultâneo', data: extendSaldo(so.simultaneo.meses, P.nMesesMax), borderColor:'#C9B183', borderWidth:2, pointRadius:0, tension:0.15, fill:false },
+      { label:'Sozinha — faseado', data: extendSaldo(soF.meses, P.nMesesMax), borderColor:'#C9B183', borderWidth:2, borderDash:[5,4], pointRadius:0, tension:0.15, fill:false },
+    ] },
+    options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{right:90}}, plugins:{legend:{display:true, position:'top', labels:{font:{...baseFont,size:10.5}}}},
+      scales:{ x:{ ticks:{font:baseFont, maxTicksLimit:14}, grid:baseGrid }, y:{ ticks:{ callback:v=>brlK(v), font:baseFont }, grid:{color:'#f0f2ec'} } } } });
+
+  /* ---- Simulador interativo: arraste pra ajustar o mes de inicio de cada lote e ver o impacto no caixa ---- */
+  const simSliders = [0,1,2].map(i=>document.getElementById('proj-simSlider'+i));
+  const simLabels = [0,1,2].map(i=>document.getElementById('proj-simLabel'+i));
+  const deltaAuto = P.profile.mesEntregaIdx + 1;
+  simSliders[1].value = deltaAuto;
+  simSliders[2].value = 2*deltaAuto;
+  let simChart = null;
+
+  function renderSimulador(){
+    const offsets = simSliders.map(s=>parseInt(s.value,10)||0);
+    simLabels.forEach((lb,i)=>{ lb.textContent = 'mês '+(offsets[i]+1); });
+
+    const jvSim = simulateTimeline(jv.camurimCashPorLote, jv.camurimVgvPorLote, P.profile, P.existenteInflowPorMes, P.colchao.total, offsets);
+    const soSim = simulateTimeline(so.camurimCashPorLote, so.camurimVgvPorLote, P.profile, P.existenteInflowPorMes, P.colchao.total, offsets);
+    const nMesesSim = Math.max(jvSim.nMeses, soSim.nMeses);
+    const hoje = new Date();
+    const labelsSim = [];
+    for(let i=0;i<nMesesSim;i++){
+      const d = new Date(hoje.getFullYear(), hoje.getMonth()+1+i, 1);
+      labelsSim.push(d.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'}));
+    }
+
+    const idxMinJvSim = jvSim.meses.findIndex(m=>m.saldo===jvSim.saldoMinimo);
+    const idxMinSoSim = soSim.meses.findIndex(m=>m.saldo===soSim.saldoMinimo);
+    const ehSimultaneo = offsets.every(o=>o===offsets[0]);
+    const ehFaseadoAuto = offsets[0]===0 && offsets[1]===deltaAuto && offsets[2]===2*deltaAuto;
+    document.getElementById('proj-simBtnSim').classList.toggle('active', ehSimultaneo);
+    document.getElementById('proj-simBtnFas').classList.toggle('active', ehFaseadoAuto);
+
+    document.getElementById('proj-simInsight').innerHTML = soSim.saldoMinimo < 0
+      ? `Com esse cronograma, o caixa da Camurim <b class="bad">sozinha</b> fica negativo em <b class="bad">${brl(soSim.saldoMinimo)}</b>${idxMinSoSim>=0?' ('+labelsSim[idxMinSoSim]+')':''} — precisaria de aporte extra ou crédito ponte. Na <b>JV</b>, o caixa ${jvSim.saldoMinimo>=0?'fica positivo o tempo todo':'chega a '+brl(jvSim.saldoMinimo)+(idxMinJvSim>=0?' ('+labelsSim[idxMinJvSim]+')':'')}. Prazo total: ${nMesesSim} meses.`
+      : `Com esse cronograma, o caixa da Camurim <b class="good">não fica negativo</b> em nenhum dos dois modelos (JV ou sozinha). Prazo total: ${nMesesSim} meses.`;
+
+    document.getElementById('proj-simKpis').innerHTML = `
+      <div class="kpi-card"><div class="label">JV — pior momento de caixa</div><div class="value" style="color:${jvSim.saldoMinimo>=0?'var(--good)':'var(--bad)'}">${brl(jvSim.saldoMinimo)}</div><div class="foot">${idxMinJvSim>=0?labelsSim[idxMinJvSim]:'saldo inicial'}</div></div>
+      <div class="kpi-card accent"><div class="label">Sozinha — pior momento de caixa</div><div class="value" style="color:${soSim.saldoMinimo>=0?'var(--good)':'var(--bad)'}">${brl(soSim.saldoMinimo)}</div><div class="foot">${idxMinSoSim>=0?labelsSim[idxMinSoSim]:'saldo inicial'}</div></div>
+      <div class="kpi-card"><div class="label">Saldo final — JV</div><div class="value">${brl(jvSim.saldoFinal)}</div><div class="foot">após ${jvSim.nMeses} meses</div></div>
+      <div class="kpi-card accent"><div class="label">Saldo final — Sozinha</div><div class="value">${brl(soSim.saldoFinal)}</div><div class="foot">após ${soSim.nMeses} meses</div></div>
+    `;
+
+    if(simChart) simChart.destroy();
+    simChart = new Chart(document.getElementById('proj-chartSimulador'), { type:'line',
+      data:{ labels: labelsSim, datasets:[
+        { label:'JV', data: jvSim.meses.map(m=>m.saldo), borderColor:'#16352a', borderWidth:2.5, pointRadius:0, tension:0.15, fill:false },
+        { label:'Sozinha', data: soSim.meses.map(m=>m.saldo), borderColor:'#C9B183', borderWidth:2.5, pointRadius:0, tension:0.15, fill:false },
+      ] },
+      options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{right:90}}, plugins:{legend:{display:true, position:'top', labels:{font:baseFont}}},
+        scales:{ x:{ ticks:{font:baseFont, maxTicksLimit:14}, grid:baseGrid }, y:{ ticks:{ callback:v=>brlK(v), font:baseFont }, grid:{color:'#f0f2ec'} } } } });
+  }
+
+  simSliders.forEach(s=>s.addEventListener('input', renderSimulador));
+  document.getElementById('proj-simBtnSim').addEventListener('click', ()=>{
+    simSliders.forEach(s=>s.value=0); renderSimulador();
+  });
+  document.getElementById('proj-simBtnFas').addEventListener('click', ()=>{
+    simSliders[0].value=0; simSliders[1].value=deltaAuto; simSliders[2].value=2*deltaAuto; renderSimulador();
+  });
+  renderSimulador();
+}
+
+/* ===================== TAB SWITCHING (lazy render) ===================== */
+// Todo o painel agora e ledger estatico mantido pelo Claude - nenhuma fonte depende mais do Google Drive.
+// Disponivel na hora, sem espera, sem ponte, sem chance de tela em branco por falha de conexao.
+let DATA = { cs: csEmbedToRows(), emp: empEmbedToRows(), atas: atasEmbedToRows(), dc: computeDuasCasas(), lb: landBankRows(), ev: eventosAtivosRows(), apjv: computeAportesJV(aportesJvRows()) };
+let currentTab = 'resumo';
+const rendered = { resumo:false, capital:false, empreendimentos:false, insights:false, atas:false, roi:false, projecao:false };
+
+function renderTab(tab){
+  if(rendered[tab]) return;
+  if(tab==='resumo'){
+    renderResumo(DATA.cs, DATA.emp, DATA.atas||[], DATA.dc);
+    rendered.resumo = true; return;
+  }
+  if(tab==='capital'){
+    renderCapitalSocial(DATA.cs);
+    rendered.capital = true; return;
+  }
+  if(tab==='empreendimentos'){
+    renderEmpreendimentos(DATA.emp, DATA.dc, DATA.lb, DATA.ev, null, DATA.apjv);
+    rendered.empreendimentos = true; return;
+  }
+  if(tab==='insights'){
+    renderInsightsTab(DATA.cs, DATA.emp, DATA.dc, DATA.ev, null, DATA.apjv);
+    rendered.insights = true; return;
+  }
+  if(tab==='atas'){
+    renderAtasTab(DATA.atas);
+    rendered.atas = true; return;
+  }
+  if(tab==='roi'){
+    renderRoiTab(DATA.cs, DATA.emp, DATA.dc);
+    rendered.roi = true; return;
+  }
+  if(tab==='projecao'){
+    renderProjecaoTab(DATA.cs, DATA.emp, DATA.dc, DATA.ev, DATA.apjv);
+    rendered.projecao = true; return;
+  }
+}
+
+document.getElementById('tabs').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.tab-btn');
+  if(!btn) return;
+  const tab = btn.dataset.tab;
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b===btn));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active', p.id==='tab-'+tab));
+  renderTab(tab);
+});
+
+/* ===================== LOAD ===================== */
+// Painel 100% local agora: nenhuma fonte depende do Google Drive/Cowork bridge.
+// Tudo em DATA já está pronto de forma síncrona — só renderiza, protegido por try/catch
+// para nunca deixar a tela em branco se algo inesperado acontecer.
+function load(){
+  try{
+    renderTab(currentTab);
+    const el = document.getElementById('last-updated');
+    if(el) el.textContent = 'Dados mantidos pelo Claude — atualizados até ' + DATA_ATUALIZADO_EM;
+  }catch(e){
+    document.getElementById('tab-'+currentTab).innerHTML = `<div class="err">Erro ao renderizar o painel: ${e.message}</div><button onclick="location.reload()" style="margin-top:10px;padding:8px 16px;border-radius:8px;border:1px solid #16352a;background:#16352a;color:#fff;cursor:pointer;font-size:13px;">Recarregar página</button>`;
+  }
+}
+
+load();
+</script>
+</body>
+</html>

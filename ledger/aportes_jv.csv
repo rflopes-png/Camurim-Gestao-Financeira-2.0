@@ -1,0 +1,42 @@
+empresa,data,valor,projeto,observacoes
+CAMURIM,08/10/2025,143600,MORADA BELA,Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)
+ARCA,28/10/2025,20000,MORADA BELA,Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)
+ARCA,29/10/2025,15003.54,MORADA BELA,Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)
+CAMURIM,31/10/2025,26574.56,MORADA BELA,Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)
+ARCA,13/11/2025,20000,MORADA BELA,Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)
+ARCA,14/11/2025,41574.56,MORADA BELA,Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)
+ARCA,21/11/2025,35000,MORADA BELA,Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)
+CAMURIM,14/12/2025,30000,MORADA BELA,Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)
+ARCA,16/12/2025,23004.21,MORADA BELA,Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)
+CAMURIM,07/01/2026,20000,MORADA BELA,Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)
+ARCA,08/01/2026,20000,MORADA BELA,Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)
+CAMURIM,19/01/2026,20000,MORADA BELA,Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)
+ARCA,23/01/2026,20000,MORADA BELA,Valor observado no extrato bancario C6 (conta JV), conciliado em 20/07/2026 - NAO usar como aporte real confirmado para o acerto 50/50: parte do aporte da Arca costuma rotear pela conta da Camurim, entao o extrato sozinho nao distingue de quem e o dinheiro (ver nota em atas.csv, item Encontro de contas Arca x Camurim)
+ARCA,24/02/2026,30000,MORADA BELA II,
+ARCA,02/03/2026,20000,MORADA BELA II,
+ARCA,04/03/2026,25000,MORADA BELA II,
+ARCA,11/03/2026,20000,MORADA BELA II,
+ARCA,18/03/2026,20000,MORADA BELA II,
+ARCA,28/03/2026,20000,MORADA BELA II,
+ARCA,14/04/2026,20000,MORADA BELA II,
+ARCA,30/04/2026,20000,MORADA BELA II,
+ARCA,05/05/2026,20000,MORADA BELA II,
+ARCA,26/05/2026,10000,MORADA BELA II,
+ARCA,05/06/2026,10000,MORADA BELA II,
+ARCA,30/06/2026,12000,MORADA BELA II,
+ARCA,17/08/2026,5000,MORADA BELA II,
+CAMURIM,,70000,MORADA BELA II,Integralizacao do terreno Morada Bela II (ver eventos_ativos.csv) - data exata nao informada
+CAMURIM,03/02/2026,30000,MORADA BELA II,
+CAMURIM,09/02/2026,15000,MORADA BELA II,
+CAMURIM,02/04/2026,20000,MORADA BELA II,
+CAMURIM,06/04/2026,20000,MORADA BELA II,
+CAMURIM,17/04/2026,20000,MORADA BELA II,
+CAMURIM,23/04/2026,20000,MORADA BELA II,
+CAMURIM,15/05/2026,10000,MORADA BELA II,
+CAMURIM,05/06/2026,10000,MORADA BELA II,
+CAMURIM,29/06/2026,12000,MORADA BELA II,
+CAMURIM,03/07/2026,2500,MORADA BELA II,Aporte pago em dinheiro (nao em PIX) - por isso nao aparece no extrato bancario da conta JV. Adiantado pessoalmente por Guilherme - ver capital_social.csv (split Rafael/Diogo/Guilherme) e atas.csv (pendencia Diogo)
+CAMURIM,17/08/2026,5000,MORADA BELA II,
+CAMURIM,26/08/2026,3000,MORADA BELA II,
+CAMURIM,27/08/2026,4200,MORADA BELA II,
+CAMURIM,28/08/2026,3000,MORADA BELA II,

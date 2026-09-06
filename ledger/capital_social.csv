@@ -1,0 +1,78 @@
+socio,data,valor,status,metodo,pago_por,observacoes
+DIOGO,17/12/2024,41500.00,PAGO,PIX,GUILHERME,
+DIOGO,23/12/2024,41500.00,PAGO,PIX,GUILHERME,
+DIOGO,24/12/2024,17000.00,PAGO,PIX,GUILHERME,
+GUILHERME,01/01/2025,77734.63,PAGO,PIX,,
+GUILHERME,21/01/2025,21800.00,PAGO,DINHEIRO,,
+DIOGO,11/02/2025,10000.00,PAGO,PIX,GUILHERME,RECONCILIACAO
+GUILHERME,12/02/2025,4700.00,PAGO,DINHEIRO,,
+GUILHERME,13/02/2025,4800.00,PAGO,DINHEIRO,,
+GUILHERME,19/02/2025,5000.00,PAGO,PIX,,
+GUILHERME,20/02/2025,4901.00,PAGO,DINHEIRO,,
+DIOGO,24/02/2025,8910.28,PAGO,PIX,GUILHERME,
+GUILHERME,28/02/2025,8600.00,PAGO,DINHEIRO,,
+DIOGO,03/03/2025,8600.00,PAGO,PIX,GUILHERME,
+GUILHERME,14/03/2025,4000.00,PAGO,DINHEIRO,,
+DIOGO,17/03/2025,4000.00,PAGO,PIX,GUILHERME,
+GUILHERME,25/03/2025,4026.50,PAGO,PIX,,
+DIOGO,25/03/2025,4026.50,PAGO,PIX,GUILHERME,
+GUILHERME,28/03/2025,1995.00,PAGO,PIX,,
+DIOGO,28/03/2025,1995.00,PAGO,PIX,GUILHERME,
+GUILHERME,04/04/2025,2962.50,PAGO,PIX,,
+DIOGO,07/04/2025,2965.50,PAGO,PIX,GUILHERME,
+DIOGO,07/04/2025,6000.00,PAGO,PIX,GUILHERME,
+GUILHERME,24/04/2025,1982.32,PAGO,PIX,,
+GUILHERME,07/05/2025,1188.00,PAGO,PIX,,
+GUILHERME,08/05/2025,2300.00,PAGO,PIX,,
+GUILHERME,09/05/2025,1139.80,PAGO,PIX,,
+GUILHERME,15/05/2025,2693.52,PAGO,PIX,,
+DIOGO,16/05/2025,3303.64,PAGO,PIX,GUILHERME,
+GUILHERME,28/05/2025,2005.03,PAGO,PIX,,
+DIOGO,27/05/2025,2005.03,PAGO,PIX,GUILHERME,
+DIOGO,06/06/2025,2720.50,PAGO,PIX,GUILHERME,
+GUILHERME,06/06/2025,2520.50,PAGO,PIX,,
+GUILHERME,10/06/2025,353.43,PAGO,PIX,,
+GUILHERME,11/06/2025,823.29,PAGO,PIX,,
+DIOGO,11/06/2025,976.72,PAGO,PIX,GUILHERME,
+GUILHERME,25/06/2025,64.90,PAGO,PIX,,
+GUILHERME,08/07/2025,600.00,PAGO,PIX,,
+DIOGO,10/07/2025,1315.64,PAGO,PIX,RUTH,
+DIOGO,10/07/2025,685.81,PAGO,PIX,RUTH,
+GUILHERME,10/07/2025,1314.20,PAGO,PIX,,
+GUILHERME,15/07/2025,917.83,PAGO,PIX,,
+GUILHERME,18/07/2025,56.33,PAGO,PIX,,
+GUILHERME,30/07/2025,1000.00,PAGO,PIX,,
+GUILHERME,31/07/2025,1500.00,PAGO,PIX,,
+DIOGO,04/08/2025,3474.16,PAGO,PIX,RUTH,
+GUILHERME,11/08/2025,1244.00,PAGO,PIX,,
+GUILHERME,29/08/2025,1440.00,PAGO,PIX,,
+GUILHERME,04/09/2025,400.00,PAGO,PIX,,
+DIOGO,04/09/2025,1084.00,PAGO,PIX,RUTH,
+DIOGO,04/09/2025,2000.00,PAGO,PIX,RUTH,
+DIOGO,19/09/2025,176.00,PAGO,PIX,RUTH,
+DIOGO,19/09/2025,1064.00,PAGO,PIX,RUTH,
+DIOGO,30/09/2025,70000.00,PAGO,PIX,RAFAEL/TOLIVE,
+GUILHERME,02/10/2025,75000.00,PAGO,PIX,RAFAEL/TOLIVE,
+DIOGO,03/10/2025,30000.00,PAGO,PIX,RAFAEL/TOLIVE,
+GUILHERME,03/10/2025,25000.00,PAGO,PIX,RAFAEL/TOLIVE,
+DIOGO,06/10/2025,-1240.00,PAGO,PIX,,
+RAFAEL,31/10/2025,75000.00,PAGO,PIX,,
+RAFAEL,01/11/2025,45000.00,PAGO,PIX,,
+GUILHERME,29/06/2026,2000.00,PAGO,PIX,,
+RAFAEL,29/06/2026,2000.00,PAGO,PIX,,
+DIOGO,29/06/2026,2000.00,PAGO,PIX,,
+RAFAEL,13/07/2026,800.00,PAGO,,GUILHERME,Aporte pago por Guilherme - Rafael ja reembolsou Guilherme diretamente (fora do capital social)
+DIOGO,13/07/2026,800.00,PAGO,,GUILHERME,Aporte pago por Guilherme - Diogo ainda precisa reembolsar Guilherme R$800 diretamente
+GUILHERME,13/07/2026,800.00,PAGO,,,Aporte - parte propria de Guilherme
+RAFAEL,03/07/2026,833.33,PAGO,,GUILHERME,Aporte para Morada Bela II (aportes_jv.csv) adiantado por Guilherme - Rafael ja reembolsou Guilherme diretamente (fora do capital social)
+DIOGO,03/07/2026,833.33,PAGO,,GUILHERME,Aporte para Morada Bela II (aportes_jv.csv) adiantado por Guilherme - Diogo ainda precisa reembolsar Guilherme diretamente
+GUILHERME,03/07/2026,833.34,PAGO,,,Aporte para Morada Bela II (aportes_jv.csv) - parte propria de Guilherme
+RAFAEL,05/09/2026,2834.00,A REEMBOLSAR,,,Acerto de contas decidido entre os socios em 05/09/2026: aportes feitos por Rafael desde jun/2026 serao reembolsados pela receita da Camurim no negocio (Morada Bela / Morada Bela II) - reembolso ainda NAO realizado, valor nao entra no total de capital corrente ate ser pago (ver status)
+DIOGO,05/09/2026,2000.00,A REEMBOLSAR,,,Acerto de contas decidido entre os socios em 05/09/2026: aportes feitos por Diogo desde jun/2026 serao reembolsados pela receita da Camurim no negocio (Morada Bela / Morada Bela II) - reembolso ainda NAO realizado, valor nao entra no total de capital corrente ate ser pago (ver status)
+GUILHERME,05/09/2026,20753.54,A REEMBOLSAR,,,Acerto de contas decidido entre os socios em 05/09/2026: aportes feitos por Guilherme desde jun/2026 serao reembolsados pela receita da Camurim no negocio (Morada Bela / Morada Bela II) - reembolso ainda NAO realizado, valor nao entra no total de capital corrente ate ser pago (ver status)
+GUILHERME,10/08/2026,1350.00,PAGO,,,Aporte proprio de Guilherme - destino/projeto nao especificado
+GUILHERME,10/08/2026,535.54,PAGO,,,Aporte proprio de Guilherme - destino/projeto nao especificado
+GUILHERME,17/08/2026,5000.00,PAGO,,,Aporte proprio de Guilherme - tambem lancado em aportes_jv.csv (CAMURIM, Morada Bela II, 17/08/2026)
+GUILHERME,26/08/2026,3000.00,PAGO,,,Aporte proprio de Guilherme - tambem lancado em aportes_jv.csv (CAMURIM, Morada Bela II, 26/08/2026)
+GUILHERME,27/08/2026,4200.00,PAGO,,,Aporte proprio de Guilherme - tambem lancado em aportes_jv.csv (CAMURIM, Morada Bela II, 27/08/2026)
+GUILHERME,28/08/2026,3000.00,PAGO,,,Aporte proprio de Guilherme - tambem lancado em aportes_jv.csv (CAMURIM, Morada Bela II, 28/08/2026)

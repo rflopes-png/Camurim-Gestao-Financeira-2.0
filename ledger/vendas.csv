@@ -1,0 +1,6 @@
+projeto,unidade,data_venda,comprador,valor_venda,despesas_venda,valor_liquido,pct_despesas_sobre_venda,observacoes
+DUAS PRIMEIRAS CASAS,Casa 1,31/10/2025,,175000.00,5400.00,169600.00,3.09%,
+DUAS PRIMEIRAS CASAS,Casa 2,27/11/2025 (fechamento),Zenildo Clecio de Lira,175000.00,10467.47,164532.53,5.98%,ITBI 3700 + IPTU 146.43 + Escritura 6621.04
+MORADA BELA,Casa 101,17/08/2026 (fechamento),,160000.00,19320.93,140679.07,12.08%,"Comissao 6.400 (4%) + Seguro RCPM 807,89 + Certidoes 62,52 + Taxas Caixa 2.700 + ITBI 5.000 + RGI 4.237,51 + IPTU 113,01 - todos valores reais, sem simulacao"
+MORADA BELA,Casa 02,13/08/2026 (fechamento),,170000.00,20509.33,149490.67,12.06%,"Comissao 8.500 (5%) + Seguro RCPM 797,12 (reais). IPTU 101,22 + ITBI 4.537,50 + RGI 4.237,51 + Certidoes 62,52 SIMULADOS pela media de Casa 101/Casa 01 - ainda nao lancados na planilha de custos"
+MORADA BELA,Casa 01,06/08/2026 (fechamento),,167000.00,18404.34,148595.66,11.02%,"Comissao 6.680 (4%) + IPTU 89,44 + ITBI 4.075 + Seguro RCPM 773,14 + Certidoes 62,52 (reais). Taxas Caixa 2.486,73 e RGI 4.237,51 SIMULADOS pela media das outras 2 vendas - ainda nao lancados na planilha de custos"

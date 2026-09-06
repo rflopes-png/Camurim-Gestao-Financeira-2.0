@@ -1,0 +1,13 @@
+data,fornecedor,categoria,item,valor,metodo,origem_pagamento,nota
+20/01/2025,ANGERSON JEAN SILVA QUEIROZ,SERVIÇO - ARQUITETO (LOTE 2),Projeto De Arquitetura,4000.00,PIX,CAMURIM,arquiteto preliminar - lote sem projeto formal ainda
+12/02/2025,ANGERSON JEAN SILVA QUEIROZ,SERVIÇO - ARQUITETO (LOTE 3),Projeto De Arquitetura,4000.00,DINHEIRO,CAMURIM,arquiteto preliminar - lote sem projeto formal ainda
+25/03/2025,ANGERSON JEAN SILVA QUEIROZ,SERVIÇO - ARQUITETO (LOTE 4),,4000.00,PIX,GUILHERME,arquiteto preliminar - lote sem projeto formal ainda
+28/03/2025,AYRSON JAYME BELLO LOPES NETO (TERRAPLANAGEM LOTE 2),SERVIÇO - ALUGUEL EQUIPAMENTO (LOTE 2),Supressão De Solo e Terraplenagem (LOTE 2),990.00,PIX,GUILHERME,arquiteto/preparo preliminar - lote sem projeto formal ainda
+23/04/2025,ANGERSON JEAN SILVA QUEIROZ,SERVIÇO - ARQUITETO (LOTE 5),,4000.00,PIX,GUILHERME,arquiteto preliminar - lote sem projeto formal ainda
+28/05/2025,ANGERSON JEAN SILVA QUEIROZ,SERVIÇO - ARQUITETO (LOTE 6),,4000.00,PIX,CAMURIM,arquiteto preliminar - lote sem projeto formal ainda
+08/10/2025,TRANSFERENCIA PARA C6 / JV,TRANSFERENCIA,TRANSFERENCIA,38425.44,PIX,CAMURIM,aporte/transferencia para conta JV (C6)
+31/10/2025,TRANSFERENCIA PARA C6 / JV,TRANSFERENCIA,TRANSFERENCIA,26574.56,PIX,CAMURIM,aporte/transferencia para conta JV (C6)
+31/10/2025,GUILHERME FALCAO LOPES,SERVIÇO - DESPACHANTE (LOTE 2),Despachante - Lote 2,250.00,PIX,CAMURIM,despachante preliminar - lote sem projeto formal ainda
+31/10/2025,GUILHERME FALCAO LOPES,SERVIÇO - DESPACHANTE (LOTE 3),Despachante - Lote 3,250.00,PIX,CAMURIM,despachante preliminar - lote sem projeto formal ainda
+31/10/2025,GUILHERME FALCAO LOPES,SERVIÇO - DESPACHANTE (LOTE 4),Despachante - Lote 4,250.00,PIX,CAMURIM,despachante preliminar - lote sem projeto formal ainda
+04/11/2025,KARINA ASSIS XAVIER,COMPRA CARRO,Compra Carro,49500.00,PIX,CAMURIM,compra de carro - nao relacionado ao negocio imobiliario
